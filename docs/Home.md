@@ -108,21 +108,21 @@ We welcome contributions to PrismBench! Whether you're fixing bugs, adding featu
 
 ## Related Pages
 
-### 🚀 **Get Started**
-- [⚡ Quick Start](Quick-Start) - Setup and first run
-- [⚙️ Configuration Overview](Configuration-Overview) - Complete configuration guide
-- [🏗️ Architecture Overview](Architecture-Overview) - System design and components
+### **Get Started**
+- [Quick Start](Quick-Start) - Setup and first run
+- [Configuration Overview](Configuration-Overview) - Complete configuration guide
+- [Architecture Overview](Architecture-Overview) - System design and components
 
-### 🧠 **Core Framework**
-- [🌳 MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search implementation
-- [🤖 Agent System](Agent-System) - Multi-agent architecture
-- [🌍 Environment System](Environment-System) - Evaluation environments
+### **Core Framework**
+- [MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search implementation
+- [Agent System](Agent-System) - Multi-agent architecture
+- [Environment System](Environment-System) - Evaluation environments
 
-### 🛠️ **Advanced Usage**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extensions
-- [📊 Results Analysis](Results-Analysis) - Understanding evaluation results
-- [🆘 Troubleshooting](Troubleshooting) - Common issues and solutions
+### **Advanced Usage**
+- [Extending PrismBench](Extending-PrismBench) - Framework extensions
+- [Results Analysis](Results-Analysis) - Understanding evaluation results
+- [Troubleshooting](Troubleshooting) - Common issues and solutions
 
 ---
 
-*Made with enough ☕️ to fell an elephant and a whole lot of ❤️ by `anonymous(for now)`* 
+*Made with enough  to fell an elephant and a whole lot of  by `anonymous(for now)`* 

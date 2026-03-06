@@ -47,10 +47,10 @@ interaction_templates:
 
 | Component | Purpose | Required |
 |-----------|---------|----------|
-| `agent_name` | Unique identifier for the agent | ✅ |
-| `configs` | LLM provider and model settings | ✅ |
-| `system_prompt` | Agent's expertise and instructions | ✅ |
-| `interaction_templates` | Input/output patterns | ✅ |
+| `agent_name` | Unique identifier for the agent | Yes |
+| `configs` | LLM provider and model settings | Yes |
+| `system_prompt` | Agent's expertise and instructions | Yes |
+| `interaction_templates` | Input/output patterns | Yes |
 
 ---
 
@@ -369,17 +369,17 @@ results = await environment.execute_node(
 
 ## Related Pages
 
-### 🔧 **Extension Development**
-- [🌐 Custom Environments](Custom-Environments) - Orchestrate multiple agents in workflows
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Use agents in search strategies
-- [🔗 Extension Combinations](Extension-Combinations) - Combine agents with other extensions
+### **Extension Development**
+- [Custom Environments](Custom-Environments) - Orchestrate multiple agents in workflows
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Use agents in search strategies
+- [Extension Combinations](Extension-Combinations) - Combine agents with other extensions
 
-### 🤖 **Agent System**
-- [🤖 Agent System](Agent-System) - Understanding the agent architecture
-- [📋 Configuration Overview](Configuration-Overview) - Agent configuration system
-- [🏗️ Architecture Overview](Architecture-Overview) - How agents fit in the framework
+### **Agent System**
+- [Agent System](Agent-System) - Understanding the agent architecture
+- [Configuration Overview](Configuration-Overview) - Agent configuration system
+- [Architecture Overview](Architecture-Overview) - How agents fit in the framework
 
-### 🛠️ **Implementation**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension overview
-- [⚡ Quick Start](Quick-Start) - Getting started with the framework
-- [🆘 Troubleshooting](Troubleshooting) - Agent-related issues and solutions
+### **Implementation**
+- [Extending PrismBench](Extending-PrismBench) - Framework extension overview
+- [Quick Start](Quick-Start) - Getting started with the framework
+- [Troubleshooting](Troubleshooting) - Agent-related issues and solutions

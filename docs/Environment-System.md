@@ -12,19 +12,19 @@ Environments are **pluggable evaluation strategies** that define how coding chal
 graph TB
     subgraph "Environment Framework"
         subgraph "Core Components"
-            BE[BaseEnvironment<br/>🏗️ Foundation]
-            ER[Environment Registry<br/>📋 Discovery]
-            ES[Environment Service<br/>⚡ Orchestration]
+            BE[BaseEnvironment<br/> Foundation]
+            ER[Environment Registry<br/> Discovery]
+            ES[Environment Service<br/> Orchestration]
         end
         
         subgraph "Built-in Environments"
-            ECC[Standard Coding Challenge<br/>📝 Basic Workflow]
-            EECC[Enhanced Coding Challenge<br/>🚀 Advanced Workflow]
+            ECC[Standard Coding Challenge<br/> Basic Workflow]
+            EECC[Enhanced Coding Challenge<br/> Advanced Workflow]
         end
         
         subgraph "Agent Integration"
-            AM[Agent Manager<br/>🤖 Lifecycle]
-            IC[Interface Client<br/>🔌 Communication]
+            AM[Agent Manager<br/> Lifecycle]
+            IC[Interface Client<br/> Communication]
         end
     end
     
@@ -254,10 +254,10 @@ The registry supports multiple method types:
 
 | Method | Purpose | Required |
 |--------|---------|----------|
-| `execute_node` | Core evaluation logic | ✅ |
-| `initialize` | Environment setup | ❌ |
-| `reset` | Cleanup and reset | ❌ |
-| `validate_config` | Configuration validation | ❌ |
+| `execute_node` | Core evaluation logic | Yes |
+| `initialize` | Environment setup | No |
+| `reset` | Cleanup and reset | No |
+| `validate_config` | Configuration validation | No |
 
 ### Dynamic Discovery
 
@@ -569,31 +569,31 @@ async def health_check(self) -> Dict:
 ---
 
 **Next Steps:**
-- [🌍 Environment Configurations](config-environments.md) - Detailed environment configuration
-- [🔧 Custom Environments](custom-environments.md) - Creating new environments
-- [🤖 Agent System](agents.md) - Understanding agent integration
-- [💡 Examples](examples-basic.md) - Environment usage examples
+- [Environment Configurations](config-environments.md) - Detailed environment configuration
+- [Custom Environments](custom-environments.md) - Creating new environments
+- [Agent System](agents.md) - Understanding agent integration
+- [Examples](examples-basic.md) - Environment usage examples
 
 ---
 
 ## Related Pages
 
-### 🔧 **Environment Development**
-- [🌐 Custom Environments](Custom-Environments) - Building custom evaluation environments
-- [🧩 Custom Agents](Custom-Agents) - Creating agents for your environments
-- [🔗 Extension Combinations](Extension-Combinations) - Combining environments with other extensions
+### **Environment Development**
+- [Custom Environments](Custom-Environments) - Building custom evaluation environments
+- [Custom Agents](Custom-Agents) - Creating agents for your environments
+- [Extension Combinations](Extension-Combinations) - Combining environments with other extensions
 
-### 🤖 **Agent Integration**
-- [🤖 Agent System](Agent-System) - Understanding agent integration
-- [🏗️ Architecture Overview](Architecture-Overview) - Overall system design
-- [📋 Configuration Overview](Configuration-Overview) - Environment configuration system
+### **Agent Integration**
+- [Agent System](Agent-System) - Understanding agent integration
+- [Architecture Overview](Architecture-Overview) - Overall system design
+- [Configuration Overview](Configuration-Overview) - Environment configuration system
 
-### 🔍 **Search Integration**
-- [🌳 MCTS Algorithm](MCTS-Algorithm) - How environments work with MCTS
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Custom search strategies
-- [📊 Results Analysis](Results-Analysis) - Environment evaluation results
+### **Search Integration**
+- [MCTS Algorithm](MCTS-Algorithm) - How environments work with MCTS
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Custom search strategies
+- [Results Analysis](Results-Analysis) - Environment evaluation results
 
-### 🛠️ **Implementation**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension overview
-- [⚡ Quick Start](Quick-Start) - Getting started with environments
-- [🆘 Troubleshooting](Troubleshooting) - Environment-related issues 
+### **Implementation**
+- [Extending PrismBench](Extending-PrismBench) - Framework extension overview
+- [Quick Start](Quick-Start) - Getting started with environments
+- [Troubleshooting](Troubleshooting) - Environment-related issues 

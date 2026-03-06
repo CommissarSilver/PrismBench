@@ -362,17 +362,17 @@ For implementation details on generating these reports, see the [Analysis Servic
 
 ## Related Pages
 
-### 🧠 **Core Algorithm**
-- [🧠 MCTS Algorithm](MCTS-Algorithm) - Understanding the algorithm that generates results
-- [🌳 Tree Structure](Tree-Structure) - Search tree data structures and analytics
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Analyzing custom phase results
+### **Core Algorithm**
+- [MCTS Algorithm](MCTS-Algorithm) - Understanding the algorithm that generates results
+- [Tree Structure](Tree-Structure) - Search tree data structures and analytics
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Analyzing custom phase results
 
-### 🏗️ **System Components**
-- [🤖 Agent System](Agent-System) - Understanding agent performance metrics
-- [🌍 Environment System](Environment-System) - Environment evaluation results
-- [🏗️ Architecture Overview](Architecture-Overview) - System-wide performance analysis
+### **System Components**
+- [Agent System](Agent-System) - Understanding agent performance metrics
+- [Environment System](Environment-System) - Environment evaluation results
+- [Architecture Overview](Architecture-Overview) - System-wide performance analysis
 
-### 🛠️ **Implementation**
-- [📋 Configuration Overview](Configuration-Overview) - Configuration impact on results
-- [🔧 Extending PrismBench](Extending-PrismBench) - Custom analysis and metrics
-- [🆘 Troubleshooting](Troubleshooting) - Resolving analysis and visualization issues 
+### **Implementation**
+- [Configuration Overview](Configuration-Overview) - Configuration impact on results
+- [Extending PrismBench](Extending-PrismBench) - Custom analysis and metrics
+- [Troubleshooting](Troubleshooting) - Resolving analysis and visualization issues 

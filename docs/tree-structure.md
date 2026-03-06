@@ -1,4 +1,4 @@
-# 🌳 Tree Structure
+# Tree Structure
 
 *This page contains the content from the original tree-structure.md file - you'll need to copy the content from that file here for GitHub Wiki compatibility.*
 
@@ -6,7 +6,7 @@ For now, this is a placeholder. Please copy the content from `docs/tree-structur
 
 ---
 
-**[⬅️ Back to Results Analysis](Results-Analysis)** | **[Troubleshooting ➡️](Troubleshooting)**
+**[Back to Results Analysis](Results-Analysis)** | **[Troubleshooting](Troubleshooting)**
 
 The search tree is the core data structure in PrismBench's MCTS algorithm. It represents the exploration space of concept-difficulty combinations and tracks the evaluation history for intelligent search guidance.
 
@@ -19,7 +19,7 @@ The search tree is a **dynamic, hierarchical structure** where nodes represent s
 ```mermaid
 graph TB
     subgraph "Tree Structure"
-        Root[Root Node<br/>🌳 Search Space]
+        Root[Root Node<br/> Search Space]
         
         subgraph "Level 1 - Single Concepts"
             L1A[loops : easy]
@@ -462,26 +462,26 @@ def deserialize_tree(data: bytes) -> Tree:
 ---
 
 **Next Steps:**
-- [🧠 MCTS Algorithm](mcts.md) - How MCTS uses the tree structure
-- [🔍 Search API](api-search.md) - API for tree operations
-- [📊 Results Analysis](analysis.md) - Analyzing tree data
-- [🛡️ Best Practices](best-practices.md) - Tree optimization strategies
+- [MCTS Algorithm](mcts.md) - How MCTS uses the tree structure
+- [Search API](api-search.md) - API for tree operations
+- [Results Analysis](analysis.md) - Analyzing tree data
+- [Best Practices](best-practices.md) - Tree optimization strategies
 
 ---
 
 ## Related Pages
 
-### 🧠 **Core Algorithm**
-- [🧠 MCTS Algorithm](MCTS-Algorithm) - How MCTS uses the tree structure
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Custom search strategies using trees
-- [📊 Results Analysis](Results-Analysis) - Analyzing tree data and performance
+### **Core Algorithm**
+- [MCTS Algorithm](MCTS-Algorithm) - How MCTS uses the tree structure
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Custom search strategies using trees
+- [Results Analysis](Results-Analysis) - Analyzing tree data and performance
 
-### 🏗️ **System Architecture**
-- [🏗️ Architecture Overview](Architecture-Overview) - Overall system design
-- [🌍 Environment System](Environment-System) - How environments populate tree nodes
-- [🤖 Agent System](Agent-System) - Agent evaluation in tree nodes
+### **System Architecture**
+- [Architecture Overview](Architecture-Overview) - Overall system design
+- [Environment System](Environment-System) - How environments populate tree nodes
+- [Agent System](Agent-System) - Agent evaluation in tree nodes
 
-### 🛠️ **Implementation**
-- [📋 Configuration Overview](Configuration-Overview) - Tree configuration parameters
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extensions
-- [🆘 Troubleshooting](Troubleshooting) - Tree-related issues and solutions 
+### **Implementation**
+- [Configuration Overview](Configuration-Overview) - Tree configuration parameters
+- [Extending PrismBench](Extending-PrismBench) - Framework extensions
+- [Troubleshooting](Troubleshooting) - Tree-related issues and solutions 

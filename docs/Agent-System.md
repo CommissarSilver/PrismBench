@@ -12,23 +12,23 @@ PrismBench employs a **multi-agent architecture** where specialized agents colla
 graph TB
     subgraph "Agent Workflow"
         subgraph "Problem Creation"
-            CD[Challenge Designer<br/>📝 Creates Problems]
-            CDA[Challenge Designer Advanced<br/>📝 Diverse Problems]
+            CD[Challenge Designer<br/> Creates Problems]
+            CDA[Challenge Designer Advanced<br/> Diverse Problems]
         end
         
         subgraph "Test Development" 
-            TG[Test Generator<br/>🧪 Creates Tests]
-            TV[Test Validator<br/>✅ Validates Tests]
+            TG[Test Generator<br/> Creates Tests]
+            TV[Test Validator<br/> Validates Tests]
         end
         
         subgraph "Solution Development"
-            PS[Problem Solver<br/>💡 Writes Solutions]
-            PF[Problem Fixer<br/>🔧 Debugs Code]
+            PS[Problem Solver<br/> Writes Solutions]
+            PF[Problem Fixer<br/> Debugs Code]
         end
         
         subgraph "Analysis"
-            TEA[Test Error Analyzer<br/>🔍 Analyzes Failures]
-            SPA[Solution Pattern Analyzer<br/>📊 Studies Patterns]
+            TEA[Test Error Analyzer<br/> Analyzes Failures]
+            SPA[Solution Pattern Analyzer<br/> Studies Patterns]
         end
     end
     
@@ -551,26 +551,26 @@ Optimize repeated operations:
 ---
 
 **Next Steps:**
-- [🌍 Environment System](environments.md) - How agents work within environments
-- [🤖 Agent Configurations](config-agents.md) - Detailed configuration guide
-- [🔧 Custom Agents](custom-agents.md) - Creating new agent types
-- [💡 Examples](examples-basic.md) - Agent usage examples
+- [Environment System](environments.md) - How agents work within environments
+- [Agent Configurations](config-agents.md) - Detailed configuration guide
+- [Custom Agents](custom-agents.md) - Creating new agent types
+- [Examples](examples-basic.md) - Agent usage examples
 
 ---
 
 ## Related Pages
 
-### 🔧 **Agent Development**
-- [🧩 Custom Agents](Custom-Agents) - Creating specialized agents with custom prompts
-- [🌐 Custom Environments](Custom-Environments) - Agent orchestration in environments
-- [🔗 Extension Combinations](Extension-Combinations) - Combining agents with other extensions
+### **Agent Development**
+- [Custom Agents](Custom-Agents) - Creating specialized agents with custom prompts
+- [Custom Environments](Custom-Environments) - Agent orchestration in environments
+- [Extension Combinations](Extension-Combinations) - Combining agents with other extensions
 
-### 🌍 **System Integration**
-- [🌍 Environment System](Environment-System) - How agents work within environments
-- [🏗️ Architecture Overview](Architecture-Overview) - Overall system design
-- [📋 Configuration Overview](Configuration-Overview) - Agent configuration system
+### **System Integration**
+- [Environment System](Environment-System) - How agents work within environments
+- [Architecture Overview](Architecture-Overview) - Overall system design
+- [Configuration Overview](Configuration-Overview) - Agent configuration system
 
-### 🛠️ **Implementation**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension overview
-- [📊 Results Analysis](Results-Analysis) - Understanding agent performance
-- [🆘 Troubleshooting](Troubleshooting) - Agent-related issues and solutions 
+### **Implementation**
+- [Extending PrismBench](Extending-PrismBench) - Framework extension overview
+- [Results Analysis](Results-Analysis) - Understanding agent performance
+- [Troubleshooting](Troubleshooting) - Agent-related issues and solutions 

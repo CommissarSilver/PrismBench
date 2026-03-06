@@ -105,17 +105,17 @@ For more help, see our [Troubleshooting Guide](troubleshooting.md) or open an is
 
 ## Related Pages
 
-### 📚 **Next Steps**
-- [⚙️ Configuration Overview](Configuration-Overview) - Detailed configuration options
-- [🏗️ Architecture Overview](Architecture-Overview) - Understanding system components
-- [🤖 Agent System](Agent-System) - How agents work together
+### **Next Steps**
+- [Configuration Overview](Configuration-Overview) - Detailed configuration options
+- [Architecture Overview](Architecture-Overview) - Understanding system components
+- [Agent System](Agent-System) - How agents work together
 
-### 🧠 **Core Concepts**
-- [🌳 MCTS Algorithm](MCTS-Algorithm) - Understanding the core algorithm
-- [🌍 Environment System](Environment-System) - Evaluation environments
-- [📊 Results Analysis](Results-Analysis) - Interpreting your results
+### **Core Concepts**
+- [MCTS Algorithm](MCTS-Algorithm) - Understanding the core algorithm
+- [Environment System](Environment-System) - Evaluation environments
+- [Results Analysis](Results-Analysis) - Interpreting your results
 
-### 🛠️ **Advanced Usage**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Customizing the framework
-- [🧩 Custom Agents](Custom-Agents) - Creating specialized agents
-- [🆘 Troubleshooting](Troubleshooting) - Common issues and solutions 
+### **Advanced Usage**
+- [Extending PrismBench](Extending-PrismBench) - Customizing the framework
+- [Custom Agents](Custom-Agents) - Creating specialized agents
+- [Troubleshooting](Troubleshooting) - Common issues and solutions 
