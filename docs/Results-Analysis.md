@@ -364,7 +364,7 @@ For implementation details on generating these reports, see the [Analysis Servic
 
 ### **Core Algorithm**
 - [MCTS Algorithm](MCTS-Algorithm) - Understanding the algorithm that generates results
-- [Tree Structure](Tree-Structure) - Search tree data structures and analytics
+- [Tree Structure](tree-structure) - Search tree data structures and analytics
 - [Custom MCTS Phases](Custom-MCTS-Phases) - Analyzing custom phase results
 
 ### **System Components**
@@ -375,4 +375,4 @@ For implementation details on generating these reports, see the [Analysis Servic
 ### **Implementation**
 - [Configuration Overview](Configuration-Overview) - Configuration impact on results
 - [Extending PrismBench](Extending-PrismBench) - Custom analysis and metrics
-- [Troubleshooting](Troubleshooting) - Resolving analysis and visualization issues 
+- [Troubleshooting](troubleshooting) - Resolving analysis and visualization issues 

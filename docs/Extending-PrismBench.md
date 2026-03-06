@@ -153,7 +153,7 @@ The true power of PrismBench comes from **combining extensions**:
 ### **Documentation**
 - [Architecture Overview](Architecture-Overview) - Framework design
 - [Configuration Guide](Configuration-Overview) - YAML configuration
-- [API Reference](LLM-Interface-API) - Service APIs
+- [API Reference](../src/services/llm_interface/README.md) - Service APIs
 
 ### **Community**
 - [Contributing Guide](https://github.com/PrismBench/PrismBench/blob/main/CONTRIBUTING.md)
@@ -179,4 +179,4 @@ The true power of PrismBench comes from **combining extensions**:
 ### **Getting Started**
 - [Quick Start](Quick-Start) - Basic setup and first run
 - [Configuration Overview](Configuration-Overview) - Configuration system
-- [Troubleshooting](Troubleshooting) - Common issues and solutions
+- [Troubleshooting](troubleshooting) - Common issues and solutions

@@ -595,4 +595,4 @@ async def _execute_competitive_workflow(self, challenge: str) -> Dict:
 ### **Implementation**
 - [Configuration Overview](Configuration-Overview) - Configuration management
 - [Results Analysis](Results-Analysis) - Understanding evaluation results
-- [Troubleshooting](Troubleshooting) - Common issues and solutions
+- [Troubleshooting](troubleshooting) - Common issues and solutions

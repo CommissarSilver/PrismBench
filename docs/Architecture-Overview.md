@@ -4,7 +4,7 @@ This document provides a comprehensive overview of PrismBench's architecture, de
 
 ## System Architecture
 
-PrismBench follows a **microservices architecture** pattern, designed for scalability, modularity, and extensibility. The system consists of three core services that communicate via REST APIs.
+PrismBench follows a **microservices architecture** pattern designed for scalability, modularity, and extensibility. The system has four services that communicate via REST APIs.
 
 ### High-Level Architecture
 
@@ -12,9 +12,10 @@ PrismBench follows a **microservices architecture** pattern, designed for scalab
 graph TB
     subgraph "PrismBench Framework"
         subgraph "Core Services"
-            Search[Search Service<br/> MCTS Engine<br/>Port 8002]
-            Environment[Environment Service<br/> Challenge Execution<br/>Port 8001]
-            LLM[LLM Interface Service<br/> Model Communication<br/>Port 8000]
+            GUI[GUI Service<br/>Web UI<br/>Port 3000]
+            Search[Search Service<br/>MCTS Engine<br/>Port 8002]
+            Environment[Environment Service<br/>Challenge Execution<br/>Port 8001]
+            LLM[LLM Interface Service<br/>Model Communication<br/>Port 8000]
         end
         
         subgraph "Data Layer"
@@ -22,6 +23,7 @@ graph TB
             FileSystem[File System<br/> Results & Logs]
         end
         
+        GUI <--> Search
         Search <--> Environment
         Environment <--> LLM
         LLM <--> Redis
@@ -42,6 +44,20 @@ graph TB
 ```
 
 ## Core Services
+
+### GUI Service (Port 3000)
+
+**Purpose**: Provides a web interface for starting and monitoring Search runs.
+
+**Key Responsibilities**:
+- Submit sessions and runs to Search
+- Poll task status and show phase progress
+- Display completed run summaries
+
+**Key Components**:
+- **Next.js Frontend**: App router + client UI
+- **API Client**: Axios calls to Search API
+- **Job State Hooks**: Polling and job lifecycle management
 
 ### Search Service (Port 8002)
 
@@ -84,7 +100,7 @@ graph TB
 **Key Responsibilities**:
 - Multi-provider LLM abstraction
 - Session-based conversation management
-- Asynchronous request processing
+- Role-based template routing
 - Agent role and prompt management
 - Response parsing and formatting
 
@@ -92,7 +108,7 @@ graph TB
 - **Provider Abstraction**: Unified interface for multiple LLM APIs
 - **Session Management**: Multi-turn conversation handling
 - **Agent Framework**: Role-based prompt management
-- **Task Processing**: Asynchronous request handling
+- **History Store**: Redis-backed role/session histories
 
 ## Design Principles
 
@@ -283,13 +299,13 @@ sequenceDiagram
 ### **Core Components**
 - [Agent System](Agent-System) - Deep dive into the agent architecture
 - [Environment System](Environment-System) - Environment framework details
-- [Tree Structure](Tree-Structure) - Search tree implementation
+- [Tree Structure](tree-structure) - Search tree implementation
 - [MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search details
 
 ### **Configuration & Setup**
 - [Configuration Overview](Configuration-Overview) - Configuration system details
 - [Quick Start](Quick-Start) - Getting started guide
-- [Troubleshooting](Troubleshooting) - Common issues and solutions
+- [Troubleshooting](troubleshooting) - Common issues and solutions
 
 ### **Extensions**
 - [Extending PrismBench](Extending-PrismBench) - Framework extensibility

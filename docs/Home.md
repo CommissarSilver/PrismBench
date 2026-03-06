@@ -45,7 +45,7 @@ PrismBench is a comprehensive framework for evaluating Large Language Model capa
 | Topic | Description | Documentation |
 |-------|-------------|---------------|
 | **Results Analysis** | Understanding and interpreting evaluation results | [Results Analysis →](Results-Analysis) |
-| **Tree Structure** | Search tree implementation and concept organization | [Tree Structure →](Tree-Structure) |
+| **Tree Structure** | Search tree implementation and concept organization | [Tree Structure →](tree-structure) |
 
 ---
 ## Extending PrismBench
@@ -62,15 +62,14 @@ PrismBench is designed to be extensible, allowing you to add custom agents, envi
 
 ## System Architecture
 
-PrismBench follows a microservices architecture with three core services:
+PrismBench follows a microservices architecture with four services:
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Search        │    │   Environment    │    │   LLM Interface │
-│   Port 8002     │◄──►│   Port 8001      │◄──►│   Port 8000     │
-│                 │    │                  │    │                 │
-│ MCTS Engine     │    │ Challenge Exec   │    │ Model Comm      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+┌──────────────┐    ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│ GUI          │    │ Search          │    │ Environment      │    │ LLM Interface   │
+│ Port 3000    │◄──►│ Port 8002       │◄──►│ Port 8001        │◄──►│ Port 8000       │
+│ Web Frontend │    │ MCTS Engine     │    │ Challenge Exec   │    │ Model Comm      │
+└──────────────┘    └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
 **[Detailed Architecture →](Architecture-Overview)**
@@ -92,7 +91,7 @@ PrismBench follows a microservices architecture with three core services:
 
 | Resource | Description |
 |----------|-------------|
-| **[Troubleshooting](Troubleshooting)** | Common issues and solutions |
+| **[Troubleshooting](troubleshooting)** | Common issues and solutions |
 | **[GitHub Discussions](https://github.com/PrismBench/PrismBench/discussions)** | Community support and questions |
 | **[Issue Tracker](https://github.com/PrismBench/PrismBench/issues)** | Bug reports and feature requests |
 
@@ -121,8 +120,8 @@ We welcome contributions to PrismBench! Whether you're fixing bugs, adding featu
 ### **Advanced Usage**
 - [Extending PrismBench](Extending-PrismBench) - Framework extensions
 - [Results Analysis](Results-Analysis) - Understanding evaluation results
-- [Troubleshooting](Troubleshooting) - Common issues and solutions
+- [Troubleshooting](troubleshooting) - Common issues and solutions
 
 ---
 
-*Made with enough  to fell an elephant and a whole lot of  by `anonymous(for now)`* 
+*Made with enough  to fell an elephant and a whole lot of  by `Ahura Majdinasab - SWAT Lab - Polytechnique Montreal`* 

@@ -135,29 +135,28 @@ async def execute_node(
 Add your environment to `configs/environment_config.yaml`:
 
 ```yaml
-environment_configs:
-  environment_my_domain:
-    agents:
-      - domain_expert
-      - evaluator 
-      - solver
-      - validator
-    max_attempts: 3
-    timeout: 300
-    custom_param: "specialized_mode"
-    
-  # Add domain-specific parameters
-  environment_advanced_domain:
-    agents:
-      - domain_expert
-      - secondary_expert
-      - solver
-      - validator
-      - quality_checker
-    max_attempts: 5
-    timeout: 600
-    parallel_evaluation: true
-    validation_rounds: 2
+environment_my_domain:
+  agents:
+    - domain_expert
+    - evaluator 
+    - solver
+    - validator
+  max_attempts: 3
+  timeout: 300
+  custom_param: "specialized_mode"
+  
+# Add domain-specific parameters
+environment_advanced_domain:
+  agents:
+    - domain_expert
+    - secondary_expert
+    - solver
+    - validator
+    - quality_checker
+  max_attempts: 5
+  timeout: 600
+  parallel_evaluation: true
+  validation_rounds: 2
 ```
 
 ### **Step 3: Agent Requirements**
@@ -166,29 +165,34 @@ Ensure required agents exist in `configs/agents/`:
 
 ```yaml
 # configs/agents/domain_expert.yaml
-agent_name: domain_expert
-
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
-  params:
-    temperature: 0.8
-    max_tokens: 4096
+role: domain_expert
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.8
+  max_tokens: 4096
 
 system_prompt: >
   You are an expert in [YOUR DOMAIN] specializing in creating challenging
   evaluation scenarios that test deep understanding of core concepts.
 
 interaction_templates:
-  - name: basic
-    required_keys: [concept, difficulty_level, requirements]
-    template: >
-      Create a challenging problem for: {concept}
-      Difficulty: {difficulty_level}
-      Requirements: {requirements}
-    output_format:
-      response_begin: <problem>
-      response_end: </problem>
+  default:
+    inputs:
+      - name: concept
+        type: str
+        description: Core concept to evaluate
+      - name: difficulty_level
+        type: str
+        description: Difficulty level
+      - name: requirements
+        type: str
+        description: Domain constraints
+    outputs:
+      - name: response
+        type: str
+        description: Generated problem
 ```
 
 ---
@@ -563,4 +567,4 @@ async def test_environment_service():
 ### **Implementation**
 - [Extending PrismBench](Extending-PrismBench) - Framework extension overview
 - [Architecture Overview](Architecture-Overview) - System design and components
-- [Troubleshooting](Troubleshooting) - Environment-related issues and solutions
+- [Troubleshooting](troubleshooting) - Environment-related issues and solutions

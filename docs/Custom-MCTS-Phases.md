@@ -758,10 +758,10 @@ async def test_individual_strategies():
 
 ### **MCTS System**
 - [MCTS Algorithm](MCTS-Algorithm) - Understanding the core algorithm
-- [Tree Structure](Tree-Structure) - Search tree implementation
+- [Tree Structure](tree-structure) - Search tree implementation
 - [Results Analysis](Results-Analysis) - Analyzing phase results
 
 ### **Implementation**
 - [Extending PrismBench](Extending-PrismBench) - Framework extension overview
 - [Configuration Overview](Configuration-Overview) - Phase configuration parameters
-- [Troubleshooting](Troubleshooting) - Phase-related issues and solutions
+- [Troubleshooting](troubleshooting) - Phase-related issues and solutions

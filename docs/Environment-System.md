@@ -164,7 +164,8 @@ sequenceDiagram
 - `test_error_analyzer`: Analyzes failure patterns
 
 **Advanced Features**:
-- Multiple problems per execution (configurable)
+- `num_problems` is configurable in `environment_config.yaml`
+- Built-in strategies currently execute one problem per request
 - Test quality validation
 - Duplicate problem avoidance
 - Enhanced error analysis
@@ -196,29 +197,27 @@ sequenceDiagram
     participant PF as Problem Fixer
     participant TEA as Test Error Analyzer
     
-    loop For each problem (num_problems)
-        E->>CDA: Generate unique problem avoiding duplicates
-        CDA-->>E: Problem description
-        E->>TG: Generate comprehensive tests
-        TG-->>E: Test cases
-        E->>TV: Validate test coverage and quality
-        TV-->>E: Validation report
-        
-        alt Validation Issues Found
-            Note over E: Incorporate validation feedback
-        end
-        
-        E->>PS: Solve the problem
-        PS-->>E: Solution code
-        E->>E: Execute tests against solution
-        
-        alt Tests Fail
-            E->>TEA: Analyze test failures in detail
-            TEA-->>E: Failure analysis
-            E->>PF: Fix solution with analysis context
-            PF-->>E: Fixed code
-            E->>E: Execute final test
-        end
+    E->>CDA: Generate unique problem avoiding duplicates
+    CDA-->>E: Problem description
+    E->>TG: Generate comprehensive tests
+    TG-->>E: Test cases
+    E->>TV: Validate test coverage and quality
+    TV-->>E: Validation report
+    
+    alt Validation Issues Found
+        Note over E: Incorporate validation feedback
+    end
+    
+    E->>PS: Solve the problem
+    PS-->>E: Solution code
+    E->>E: Execute tests against solution
+    
+    alt Tests Fail
+        E->>TEA: Analyze test failures in detail
+        TEA-->>E: Failure analysis
+        E->>PF: Fix solution with analysis context
+        PF-->>E: Fixed code
+        E->>E: Execute final test
     end
     
     E-->>E: Return aggregated results
@@ -391,47 +390,24 @@ Communication with LLM Interface Service:
 
 ```python
 async def interact(self, **kwargs) -> Optional[str]:
-        """
-        Interact with the LLM service.
-
-        Args:
-            **kwargs: Input data for the interaction
-
-        Returns:
-            Optional[str]: Response from the LLM
-        """
         if not self._initialized:
             await self.initialize()
 
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
-                # Start the interaction
                 logger.info(f"Interacting with {self.role} with {kwargs} - {self.session_id}")
                 response = await client.post(
                     f"{self.base_url}/interact",
                     json={
                         "session_id": self.session_id,
+                        "role": self.role,
                         "input_data": kwargs,
                         "use_agent": False,
                     },
                 )
                 response.raise_for_status()
                 data = response.json()
-                task_id = data.get("task_id")
-
-                # Poll for results
-                while True:
-                    await asyncio.sleep(0.5)  # Wait before checking status
-                    status_response = await client.get(f"{self.base_url}/task_status/{task_id}")
-                    logger.info(f"Status response: {status_response}")
-                    status_response.raise_for_status()
-                    status_data = status_response.json()
-
-                    if status_data["status"] == "completed":
-                        return status_data["result"]["response"]
-                    elif status_data["status"] == "failed":
-                        logger.error(f"Task failed: {status_data.get('error')}")
-                        return None
+                return data.get("message")
 
         except Exception as e:
             logger.opt(exception=e).error(f"Error in LLM interaction: {e}")
@@ -569,10 +545,10 @@ async def health_check(self) -> Dict:
 ---
 
 **Next Steps:**
-- [Environment Configurations](config-environments.md) - Detailed environment configuration
-- [Custom Environments](custom-environments.md) - Creating new environments
-- [Agent System](agents.md) - Understanding agent integration
-- [Examples](examples-basic.md) - Environment usage examples
+- [Configuration Overview](Configuration-Overview) - Detailed environment configuration
+- [Custom Environments](Custom-Environments) - Creating new environments
+- [Agent System](Agent-System) - Understanding agent integration
+- [Extending PrismBench](Extending-PrismBench) - Environment usage examples
 
 ---
 
@@ -596,4 +572,4 @@ async def health_check(self) -> Dict:
 ### **Implementation**
 - [Extending PrismBench](Extending-PrismBench) - Framework extension overview
 - [Quick Start](Quick-Start) - Getting started with environments
-- [Troubleshooting](Troubleshooting) - Environment-related issues 
+- [Troubleshooting](troubleshooting) - Environment-related issues 
