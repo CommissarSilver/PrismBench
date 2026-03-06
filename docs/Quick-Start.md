@@ -13,7 +13,7 @@ This guide gets PrismBench running locally with the current microservice stack.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/PrismBench/PrismBench.git
+git clone https://github.com/CommissarSilver/PrismBench.git
 cd PrismBench
 ```
 
