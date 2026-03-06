@@ -2,91 +2,98 @@
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://python.org)
-[![Docker](https://img.shields.io/badge/Docker-ready-blue.svg)](https://docker.com)
+[![Docker](https://img.shields.io/badge/Docker-containerized-blue.svg)](https://docker.com)
+[![Process Pool](https://img.shields.io/badge/Execution-ProcessPoolExecutor-5E6AD2.svg)](#execution-and-artifact-model)
 
-> A flexible, containerized microservice for managing coding challenges, test generation, and solution evaluation with pluggable environment strategies.
+The Environment Service is PrismBench's challenge execution runtime. It exposes a stable HTTP API for running coding challenges through environment strategies, coordinates role-based LLM calls via the LLM Interface service, executes generated code against generated tests, and returns attempt-level traces used by Search/MCTS scoring.
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Quick Start](#quick-start)
-- [Architecture](#architecture)
-- [Built-in Environments](#built-in-environments)
+- [Why This Service Exists](#why-this-service-exists)
+- [Service Responsibilities](#service-responsibilities)
+- [How a Request Flows](#how-a-request-flows)
 - [API Reference](#api-reference)
-- [Configuration](#configuration)
-- [Development](#development)
-- [Extending the Framework](#extending-the-framework)
-- [Deployment](#deployment)
+- [Execution and Artifact Model](#execution-and-artifact-model)
+- [Environment Configuration Contract](#environment-configuration-contract)
+- [Configuration and Environment Variables](#configuration-and-environment-variables)
+- [Run and Test Locally](#run-and-test-locally)
+- [Run with Docker Compose](#run-with-docker-compose)
+- [Extending with Custom Environments](#extending-with-custom-environments)
+- [Operational Notes](#operational-notes)
+- [Troubleshooting](#troubleshooting)
+- [Code Map](#code-map)
 
-## Overview
+## Why This Service Exists
 
-The Environment Service provides a RESTful API for executing coding challenges across different environments, each optimized for specific evaluation objectives and agent configurations.
+In PrismBench, Search discovers what to evaluate, but it needs a dedicated execution service to actually run challenges and produce structured outcomes. This service centralizes that execution concern and provides:
 
-***The current provided environments (`environment_coding_challenge`, `environment_enhanced_coding_challenge`) are focused on coding challenges and LLM agent evaluation***.
+- One API contract (`POST /run-challenge`) for all challenge execution requests.
+- Strategy-based environment behavior (`environment_coding_challenge`, `environment_enhanced_coding_challenge`, custom environments).
+- Multi-agent orchestration through the LLM Interface service instead of direct provider calls.
+- Deterministic attempt tracing (`data_trail`) for downstream scoring and analysis.
+- Isolated per-request code execution artifacts.
 
-However, the framework's modular architecture makes it easy to extend for any domain requiring agent-based problem solving and evaluation.
+Without this service, each caller would have to duplicate environment selection, agent/session coordination, subprocess execution, and result normalization.
 
-### Core Features
+## Service Responsibilities
 
-- **Pluggable Environments**: Decorator-based registry system for custom environments
-- **Agent-Based Workflow**: Multi-agent orchestration for challenge generation and solving
-- **Configuration-Driven**: External YAML configuration for all behaviors
-- **Async-First**: Full asynchronous support for concurrent operations
-- **Containerized**: Docker-ready for easy deployment
+This service does:
 
-## Quick Start
+- Accept challenge execution requests via FastAPI.
+- Validate and route requests to registered environment strategies.
+- Load environment definitions from `configs/environment_config.yaml`.
+- Initialize role-specific LLM interface clients for configured agents.
+- Run generated Python solution + test bundles in subprocesses.
+- Parse execution output into `tests_passed_num`, `tests_failed_num`, and `tests_errored_num`.
+- Return full attempt history in `ChallengeResults`.
 
-### Prerequisites
+This service does not:
 
-- Python 3.12+
-- Docker (optional, for containerized deployment)
-- Access to LLM Interface Service
+- Run search logic or MCTS orchestration (Search service does this).
+- Talk directly to OpenAI/Anthropic/etc. (LLM Interface service does this).
+- Persist benchmark datasets/results as a data platform.
+- Enforce authn/authz by default.
 
-### Installation
+## How a Request Flows
 
-```bash
-# Install dependencies
-uv pip install -e .
+```mermaid
+sequenceDiagram
+    participant C as Caller (Search/Client)
+    participant API as FastAPI (/run-challenge)
+    participant ES as EnvironmentService
+    participant E as BaseEnvironment + Strategy
+    participant L as LLM Interface Service
+    participant X as Python Subprocess
 
-# Set up configuration
-cp configs/environment_config.yaml.example configs/environment_config.yaml
-# Edit environment_config.yaml with your settings
-
-# Run the service
-cd src
-uvicorn main:app --reload --host 0.0.0.0 --port 8001
+    C->>API: POST /run-challenge?environment_name=...
+    API->>ES: run_challenge(environment_name, request)
+    ES->>ES: load env config + validate environment
+    ES->>E: create_environment(...agents...)
+    E->>L: POST /interact (problem/test/solution roles)
+    E->>X: run combined solution+tests file
+    X-->>E: stdout/stderr + return code
+    E->>E: update data_trail entry
+    alt solved
+        E-->>ES: ChallengeResults(success=true, data_trail)
+    else not solved
+        E->>L: fixer/analyzer interactions (strategy-dependent)
+        E-->>ES: ChallengeResults(success=false|true, data_trail)
+    end
+    ES-->>API: response model
+    API-->>C: 200 ChallengeResults (or mapped HTTP error)
 ```
 
-### Basic Usage Example
+## API Reference
 
-```python
-# 1. Import and setup
-from src.environment_client import EnvironmentClient
-from src.core.config import get_settings
-from src.services.environment_service import EnvironmentService
+Interactive docs when running locally:
 
-# 2. Initialize service
-settings = get_settings()
-service = EnvironmentService(settings)
+- Swagger: [http://localhost:8001/docs](http://localhost:8001/docs)
+- ReDoc: [http://localhost:8001/redoc](http://localhost:8001/redoc)
 
-# 3. Run a challenge
-results = await service.run_challenge(
-    environment_name="environment_coding_challenge",
-    request=ChallengeRequest(
-        concept="loops",
-        difficulty_level="medium",
-        max_attempts=3
-    )
-)
-```
+### `GET /`
 
-### Verify Installation
+Returns service metadata and links:
 
-```bash
-curl http://localhost:8001/health
-```
-
-**Expected Response:**
 ```json
 {
   "message": "PrismBench - Environment Service - Alive",
@@ -96,527 +103,338 @@ curl http://localhost:8001/health
 }
 ```
 
-## Architecture
+### `GET /health`
 
-### Project Structure
+Process-level health endpoint:
 
-```
-src/services/environment/
-├── api/                           # REST API layer
-│   └── v1/
-│       ├── endpoints/             # API endpoints
-│       │   ├── challenges.py      # Challenge execution endpoints
-│       │   └── health.py          # Health check endpoints
-│       └── router.py              # API router configuration
-├── core/                          # Core functionality
-│   ├── config.py                  # Configuration management
-│   ├── dependencies.py            # Dependency injection
-│   └── exceptions.py              # Custom exceptions
-├── environment/                   # Environment implementations
-│   ├── base_environment.py        # Base environment class
-│   ├── environment_registry.py    # Environment registration system
-│   ├── environment_coding_challenge.py      # Standard environment
-│   ├── environment_enhanced_coding_challenge.py  # Enhanced environment
-│   └── utils.py                   # Utility functions
-├── models/                        # Data models
-│   ├── domain.py                  # Domain models
-│   ├── requests.py                # Request models
-│   └── responses.py               # Response models
-├── services/                      # Business logic
-│   └── environment_service.py     # Main environment service
-├── interface_client.py            # LLM interface client
-└── main.py                        # FastAPI application
-```
-
-### Core Components
-
-#### BaseEnvironment
-
-The `BaseEnvironment` class provides the core environment functionality:
-
-- **Agent Management**: Automatic initialization and management of LLM agents
-- **Output Handling**: Temporary directory creation and cleanup for test execution
-- **Process Pool**: Concurrent execution of test scripts using ProcessPoolExecutor
-- **Strategy Pattern**: Uses environment registry for pluggable implementations
-
-#### EnvironmentRegistry
-
-The `EnvironmentRegistry` implements a decorator-based strategy pattern:
-
-- **Dynamic Discovery**: Automatically discovers environment modules in the directory
-- **Strategy Registration**: Register custom implementations using decorators
-- **Runtime Resolution**: Dynamically resolve environment methods at execution time
-
-#### Environment Interface
-
-Each environment **must** implement the core method:
-
-| Method | Purpose | Async | Description |
-|--------|---------|-------|-------------|
-| `execute_node` | Challenge Execution | ✅ | Defines how a coding challenge should be executed for the environment |
-
-#### InterfaceClient
-
-The `InterfaceClient` handles communication with the LLM Interface Service:
-
-- **Session Management**: Automatic session initialization and cleanup
-- **Async Communication**: Full async HTTP client with timeout support
-- **Polling**: Intelligent polling for task completion status
-- **Error Handling**: Robust error handling and retry logic
-
-### Execution Flow
-
-```mermaid
-graph TD
-    A[API Request] --> B[Environment Service]
-    B --> C[Load Environment Config]
-    C --> D[Create Environment]
-    D --> E[Initialize Agents]
-    E --> F[Execute Challenge]
-    F --> G[Generate Problem]
-    G --> H[Generate Tests]
-    H --> I[Solve Problem]
-    I --> J[Fix if Needed]
-    J --> K[Return Results]
-```
-
-## Built-in Environments
-
-The current implementation includes two reference environments for coding challenges:
-
-### Standard Coding Challenge (`environment_coding_challenge`)
-
-**Objective**: Execute standard coding challenges with basic agent workflow.
-
-**Agents Required**:
-- `challenge_designer`: Generates problem statements
-- `test_generator`: Creates test cases
-- `problem_solver`: Generates solutions
-- `problem_fixer`: Fixes failed solutions
-
-**Strategy Details**:
-- Single problem per execution
-- Standard test execution and evaluation
-- Basic scoring and failure handling
-- Up to max_attempts solution attempts + 1 final fix attempt
-
-**Best For**: Standard evaluation, baseline assessment, single problem testing
-
-### Enhanced Coding Challenge (`environment_enhanced_coding_challenge`)
-
-**Objective**: Execute enhanced challenges with additional validation and multiple problems.
-
-**Agents Required**:
-- `challenge_designer_advanced`: Generates diverse problems avoiding duplicates
-- `test_generator`: Creates test cases
-- `test_validator`: Validates test case quality
-- `problem_solver`: Generates solutions
-- `problem_fixer`: Fixes failed solutions
-- `test_error_analyzer`: Provides detailed error analysis
-
-**Strategy Details**:
-- Multiple problems per execution (configurable)
-- Enhanced problem generation with duplicate avoidance
-- Test validation and error analysis
-- Comprehensive reporting and analysis
-
-**Best For**: Comprehensive evaluation, test quality assurance, batch processing
-
-## API Reference
-
-### Interactive Documentation
-
-- **Swagger UI**: [http://localhost:8001/docs](http://localhost:8001/docs)
-- **ReDoc**: [http://localhost:8001/redoc](http://localhost:8001/redoc)
-
-### REST Endpoints
-
-#### Run Challenge
-```http
-POST /run-challenge?environment_name=environment_coding_challenge
-Content-Type: application/json
-
+```json
 {
-  "concept": "loops",
-  "difficulty_level": "medium",
-  "max_attempts": 3
+  "status": "healthy",
+  "service": "environment"
 }
 ```
 
-**Response:**
+### `POST /run-challenge`
+
+Primary execution endpoint.
+
+Query parameter:
+
+- `environment_name` (optional): defaults to `environment_coding_challenge`.
+
+Request body:
+
+```json
+{
+  "concept": "dynamic programming",
+  "difficulty_level": "medium",
+  "max_attempts": 3,
+  "previous_problems": ["Two Sum Variants"]
+}
+```
+
+Request semantics:
+
+- `concept` accepts either a single string or a list of strings.
+- `difficulty_level` is forwarded directly to environment agents.
+- `max_attempts` overrides the environment default when provided.
+- `previous_problems` is primarily relevant for enhanced environment prompt context.
+
+Response model:
+
 ```json
 {
   "success": true,
   "data_trail": [
     {
       "attempt_num": 0,
-      "problem_statement": "Write a function that...",
-      "test_cases": "def test_solution()...",
-      "solution_code": "def solution()...",
+      "problem_statement": "...",
+      "test_cases": "...",
+      "solution_code": "...",
+      "success": true,
+      "output": "All tests passed.",
       "tests_passed_num": 5,
       "tests_failed_num": 0,
       "tests_errored_num": 0,
-      "success": true,
-      "output": "All tests passed."
+      "fixed_by_problem_fixer": false,
+      "error_feedback": null,
+      "test_validation": null,
+      "test_error_analysis": null
     }
   ]
 }
 ```
 
-#### Health Check
-```http
-GET /health
-```
+`data_trail` field meanings:
 
-**Response:**
-```json
-{
-  "message": "PrismBench - Environment Service - Alive",
-  "documentation": "/docs",
-  "redoc": "/redoc",
-  "health": "/health"
-}
-```
+- `attempt_num`: zero-based attempt index (final fixer attempt appears as an additional entry).
+- `problem_statement`: generated challenge text.
+- `test_cases`: generated tests after function-name normalization to `solution`.
+- `solution_code`: candidate/fixed code executed for this attempt.
+- `success`: attempt-level pass/fail.
+- `output`: raw subprocess output used for diagnostics and error-feedback prompts.
+- `tests_passed_num` / `tests_failed_num` / `tests_errored_num`: parsed test outcome counts.
+- `fixed_by_problem_fixer`: set to `true` when final fixer attempt succeeds.
+- `error_feedback`: feedback prompt passed to solver on iterative retries.
+- `test_validation`: enhanced environment validator output (populated on successful solve path).
+- `test_error_analysis`: enhanced environment analyzer output (fixer path).
 
-### Python API
+Common error cases:
 
-#### EnvironmentService Class
+- `500`: unknown environment name, missing environment agents/config, strategy execution failures.
+- `400`: only used if `ValidationException` is raised (not common in current flow).
+- `500` with `"Internal server error"`: unexpected uncaught exception in endpoint handler.
 
-```python
-class EnvironmentService:
-    def __init__(self, settings: Settings)
+## Execution and Artifact Model
 
-    async def run_challenge(
-        self,
-        environment_name: str,
-        request: ChallengeRequest
-    ) -> Dict
-```
+Each `run_challenge` call creates a new `BaseEnvironment` instance with:
 
-#### BaseEnvironment Class
+- A new `challenge_id` UUID.
+- A dedicated output directory: `ENV_OUTPUT_DIR/<challenge_id>/`.
+- A `ProcessPoolExecutor` for subprocess script execution.
 
-```python
-class BaseEnvironment:
-    def __init__(self, environment_name: str, **kwargs)
+Per attempt:
 
-    async def initialize(self) -> None
-    async def execute_node(self, **kwargs) -> Dict
-    async def reset(self) -> None
-```
+- Service writes a unique file: `attempt_<attempt>_<uuid>_combined_code.py`.
+- File content is `solution_code + "\n" + test_cases`.
+- Script is executed with `python <script_path>`.
+- Return code/output are mapped to success and test count metrics.
 
-## Configuration
+Cleanup behavior:
 
-### Environment Configuration
+- `reset()` closes remote LLM interface sessions for all agents.
+- Object destructor shuts down process pool and removes files/directories.
+- On some early-return failure paths in environment strategies, `reset()` is skipped, so remote sessions may remain until separately deleted.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `agents` | List[str] | Required | List of agent names for this environment |
-| `max_attempts` | int | 3 | Maximum solution attempts per problem |
-| `timeout` | int | 300 | Request timeout in seconds |
-| `num_problems` | int | 1 | Number of problems to generate |
+## Environment Configuration Contract
 
-### Application Settings
+Environment definitions live in `configs/environment_config.yaml`.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `app_name` | str | "PrismBench Environment Service" | Application name |
-| `version` | str | "0.1.0" | Application version |
-| `debug` | bool | False | Debug mode flag |
-| `llm_service_url` | str | "http://llm-interface:8000" | LLM service URL |
+Each top-level key is an environment name (must match registered strategy name).
 
-### Environment Variables
+Supported fields (via `EnvironmentConfig`):
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `LLM_SERVICE_URL` | URL of the LLM interface service | `http://llm-interface:8000` |
-| `ENV_OUTPUT_DIR` | Directory for temporary test outputs | `/app/env_outputs` |
-| `CONFIG_FILE_PATH` | Path to agent configuration file | `/app/configs/agents.yml` |
+- `agents` (required): ordered list of role names used to instantiate `InterfaceClient`s.
+- `max_attempts` (optional, default `3`): retry budget for generation/solve loops.
+- `timeout` (optional, default `300`): modeled in config but not currently wired to `InterfaceClient`.
+- `num_problems` (optional, default `1`): forwarded when `>1`, but built-in strategies currently execute one problem per request.
+- Additional custom keys are accepted (`extra = "allow"`), enabling custom environment-specific params.
 
-### Example Configuration
+Current repository configuration:
 
 ```yaml
-# configs/environment_config.yaml
 environment_coding_challenge:
   agents:
-    - challenge_designer
-    - test_generator  
-    - problem_solver
-    - problem_fixer
+    - "challenge_designer"
+    - "test_generator"
+    - "problem_solver"
+    - "problem_fixer"
   max_attempts: 3
   timeout: 300
   num_problems: 1
 
 environment_enhanced_coding_challenge:
   agents:
-    - challenge_designer_advanced
-    - test_generator
-    - test_validator
-    - problem_solver
-    - problem_fixer
-    - test_error_analyzer
+    - "challenge_designer_advanced"
+    - "test_generator"
+    - "problem_solver"
+    - "problem_fixer"
+    - "test_validator"
+    - "test_error_analyzer"
   max_attempts: 3
-  timeout: 300
+  timeout: 600
   num_problems: 5
 ```
 
-## Development
+### Built-in environment behavior
 
-### Environment Philosophy
+`environment_coding_challenge`:
 
-The Environment Service is built on several key principles:
+- Agents: `challenge_designer`, `test_generator`, `problem_solver`, `problem_fixer`.
+- Flow: problem generation -> test generation -> iterative solving -> final fixer attempt.
 
-- **Modularity**: Each environment is completely independent and can be mixed, matched, or replaced without affecting other components
-- **Extensibility**: The decorator-based registry system allows for defining custom environments without modifying core framework code
-- **Agent-Based**: Built-in support for multiple LLM agents with different roles (challenge designer, test generator, problem solver, problem fixer)
-- **Configuration-Driven**: All environment behaviors can be tuned through external configuration files, supporting different experimental setups
-- **Async-First**: Full asynchronous support for efficient concurrent operations and LLM interactions
+`environment_enhanced_coding_challenge`:
 
-### Running Tests
+- Agents: `challenge_designer_advanced`, `test_generator`, `test_validator`, `problem_solver`, `problem_fixer`, `test_error_analyzer`.
+- Adds test validation and failure analysis around the standard flow.
+- Uses `previous_problems` context to reduce duplication during problem generation.
+
+Environment registration rules:
+
+- Strategy modules must be named `environment_*.py` under `src/environment/`.
+- Methods are registered via `@environment_registry.register_environment_method("<name>", "execute_node")`.
+- `EnvironmentRegistry.load_environment_modules()` auto-imports matching modules to register strategies.
+
+## Configuration and Environment Variables
+
+| Variable | Required | Default | Purpose |
+| --- | --- | --- | --- |
+| `LLM_SERVICE_URL` | No | `http://llm-interface:8000` | Base URL for outbound role interactions (`/interact`, `/session/{id}`) |
+| `ENV_OUTPUT_DIR` | No | `/app/env_outputs` | Root directory for per-request generated execution files |
+| `PYTHONPATH` | Deployment-dependent | none | Module resolution in container/local runtime |
+
+Configuration file requirements:
+
+- `configs/environment_config.yaml` must exist relative to process working directory.
+- Service startup succeeds without it, but first request that resolves settings will fail with `FileNotFoundError`.
+
+## Run and Test Locally
+
+Commands below assume repository root as current working directory.
+
+1. Ensure the LLM Interface dependency is reachable (for example, start `redis` and `llm-interface` with Docker Compose).
 
 ```bash
-# Unit tests
-pytest tests/unit/
-
-# Integration tests  
-pytest tests/integration/
-
-# All tests
-pytest
+docker compose -f docker/docker-compose.yaml up --build redis llm-interface
 ```
 
-### Integration Points
+2. Install Environment service dependencies.
 
-#### LLM Interface Service
+```bash
+cd src/services/environment
+uv pip install -e .
+cd ../../..
+```
 
-The Environment Service integrates with the LLM Interface Service for agent interactions:
+3. Start the Environment API from repository root.
 
-- **Base URL**: `http://llm-interface:8000` (configurable)
-- **Session Management**: Automatic session creation and cleanup
-- **Agent Roles**: Each agent has a specific role configuration
-- **Async Communication**: Non-blocking HTTP requests with polling
+```bash
+export LLM_SERVICE_URL=http://localhost:8000
+uvicorn src.services.environment.src.main:app --host 0.0.0.0 --port 8001 --reload
+```
 
-#### Search Service Integration
+4. Verify liveness.
 
-When used with the Search Service:
+```bash
+curl http://localhost:8001/health
+```
 
-- **Environment Client**: Search service uses `EnvironmentClient` to communicate
-- **Challenge Execution**: Provides evaluation results for MCTS nodes
-- **Configuration**: Environment name specified in search phase configuration
+### Quick functional check
 
-## Extending the Framework
+```bash
+curl -s "http://localhost:8001/run-challenge?environment_name=environment_coding_challenge" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "concept": "two pointers",
+    "difficulty_level": "easy",
+    "max_attempts": 2
+  }' | jq .
+```
 
-### Creating Custom Environments
+## Run with Docker Compose
 
-#### Step 1: Environment Implementation
+From repository root:
 
-Create a new module for your custom environment:
+```bash
+docker compose -f docker/docker-compose.yaml up --build node-env
+```
+
+The compose stack for this service:
+
+- Builds from `src/services/environment/Dockerfile`.
+- Mounts repository `configs/` into `/app/configs`.
+- Mounts service source into `/app/src` for iterative development.
+- Exposes the service at `http://localhost:8001` (`container:8000`).
+- Sets `LLM_SERVICE_URL=http://llm-interface:8000`.
+
+## Extending with Custom Environments
+
+1. Add a strategy module under `src/environment/` (for example `environment_custom.py`).
+2. Register `execute_node` using the environment registry decorator.
+3. Add matching config entry in `configs/environment_config.yaml`.
+4. Call `/run-challenge?environment_name=environment_custom`.
+
+Minimal custom strategy:
 
 ```python
-# my_custom_environment.py
 from typing import TYPE_CHECKING, Dict
-from loguru import logger
-from src.environment.environment_registry import environment_registry
+
+from .environment_registry import environment_registry
 
 if TYPE_CHECKING:
-    from src.environment.base_environment import BaseEnvironment
+    from .base_environment import BaseEnvironment
 
-@environment_registry.register_environment_method(
-    "my_custom_environment",
-    "execute_node"
-)
-async def execute_node(
-    self: "BaseEnvironment",
-    custom_param: str,
-    **kwargs
-) -> Dict:
-    """Custom environment execution logic."""
-    # Initialize environment if needed
+
+@environment_registry.register_environment_method("environment_custom", "execute_node")
+async def execute_node(self: "BaseEnvironment", concept: str, difficulty_level: str, **kwargs) -> Dict:
     if not self._initialized:
         await self.initialize()
 
-    # Your custom logic here
-    results = await self.agents["custom_agent"].interact(
-        custom_input=custom_param
+    message = await self.agents["challenge_designer"].interact(
+        concepts=concept,
+        difficulty_level=difficulty_level,
     )
+    await self.reset()
 
-    return {"success": True, "data": results}
+    return {"success": bool(message), "data_trail": []}
 ```
 
-#### Step 2: Configuration
+## Operational Notes
 
-Add your environment to the configuration:
+- CORS is currently open (`*`) for origins, methods, and headers.
+- Service executes generated Python code in subprocesses; deploy only inside restricted runtime boundaries.
+- `/health` checks API process liveness only, not end-to-end dependency health.
+- `InterfaceClient.clear_memory()` exists but the current LLM Interface API does not expose a matching endpoint; the Environment service uses session close (`DELETE /session/{id}`) instead.
+- Settings are loaded/cached with `lru_cache`, so config file changes require process restart to guarantee refresh.
 
-```yaml
-# environment_config.yaml
-my_custom_environment:
-  agents:
-    - custom_agent
-    - helper_agent
-  max_attempts: 5
-  timeout: 600
-  custom_parameter: "value"
+## Troubleshooting
+
+### `500` with "Environment '...' not found"
+
+Most common cause is mismatch between requested `environment_name` and registered strategy names.
+
+Confirm:
+
+- Module file follows `environment_*.py` naming.
+- Decorator uses the same environment name you request.
+- Module is in `src/environment/` so auto-discovery can import it.
+
+### `500` due missing environment config or agents
+
+Confirm:
+
+- `configs/environment_config.yaml` exists from the process working directory.
+- Requested environment has an `agents` list.
+- Agent role names match configured roles in LLM Interface service.
+
+### Frequent failed attempts with empty outputs
+
+Check:
+
+- `LLM_SERVICE_URL` points to reachable LLM Interface instance.
+- Role configs are available in LLM Interface for every role used by this environment.
+- Returned `data_trail[*].output` for syntax/runtime errors in generated code.
+
+### File/permission errors under `ENV_OUTPUT_DIR`
+
+Ensure the runtime user can create, write, and delete directories/files under the configured output root.
+
+## Code Map
+
+```text
+src/services/environment/
+├── src/main.py                                   # FastAPI app bootstrap + CORS + root route
+├── src/api/v1/router.py                          # Route aggregation
+├── src/api/v1/endpoints/challenges.py            # /run-challenge
+├── src/api/v1/endpoints/health.py                # /health
+├── src/services/environment_service.py           # Runtime orchestration + environment selection
+├── src/environment/base_environment.py           # Shared environment runtime (agents, pool, dispatch, reset)
+├── src/environment/environment_registry.py       # Discovery + strategy registration
+├── src/environment/environment_coding_challenge.py
+│                                                  # Standard challenge strategy
+├── src/environment/environment_enhanced_coding_challenge.py
+│                                                  # Enhanced strategy with validation + analysis
+├── src/environment/utils.py                      # Script execution + helper utilities
+├── src/interface_client.py                       # LLM Interface HTTP client wrapper
+├── src/models/requests.py                        # Request schemas
+├── src/models/responses.py                       # Response schemas
+├── src/models/domain.py                          # Challenge data-trail model
+├── src/core/config.py                            # YAML config loading + settings model
+├── src/core/dependencies.py                      # FastAPI dependency providers
+├── src/core/exceptions.py                        # Domain exceptions + HTTP mapping
+├── pyproject.toml                                # Service dependency definition
+└── Dockerfile                                    # Container runtime definition
 ```
 
-#### Step 3: Registration and Usage
-
-```python
-# Import your environment to register it
-import my_custom_environment
-
-# Use your custom environment
-results = await service.run_challenge(
-    environment_name="my_custom_environment",
-    request=CustomRequest(custom_param="test")
-)
-```
-
-### Advanced Customization
-
-#### Custom Agent Interactions
-
-```python
-@environment_registry.register_environment_method(
-    "advanced_environment",
-    "execute_node"
-)
-async def execute_node(self: "BaseEnvironment", **kwargs) -> Dict:
-    # Multi-agent coordination
-    design_result = await self.agents["designer"].interact(prompt="Design problem")
-    review_result = await self.agents["reviewer"].interact(
-        problem=design_result,
-        action="review"
-    )
-
-    # Custom scoring logic
-    score = calculate_custom_score(design_result, review_result)
-
-    return {"success": True, "score": score, "data": review_result}
-```
-
-### Advanced Usage
-
-#### Multi-Environment Workflows
-
-```python
-async def multi_environment_evaluation():
-    # Standard evaluation
-    standard_results = await service.run_challenge(
-        "environment_coding_challenge",
-        request
-    )
-
-    # Enhanced evaluation
-    enhanced_results = await service.run_challenge(
-        "environment_enhanced_coding_challenge",
-        request
-    )
-
-    # Compare results
-    return compare_results(standard_results, enhanced_results)
-```
-
-#### Custom Error Handling
-
-```python
-try:
-    results = await service.run_challenge(environment_name, request)
-except EnvironmentExecutionException as e:
-    logger.error(f"Environment execution failed: {e}")
-    # Fallback logic
-except ConfigurationException as e:
-    logger.error(f"Configuration error: {e}")
-    # Configuration repair logic
-```
-
-#### Batch Processing
-
-```python
-async def batch_challenges(concepts: List[str], difficulties: List[str]):
-    tasks = []
-    for concept in concepts:
-        for difficulty in difficulties:
-            request = ChallengeRequest(
-                concept=concept,
-                difficulty_level=difficulty
-            )
-            task = service.run_challenge("environment_coding_challenge", request)
-            tasks.append(task)
-
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    return process_batch_results(results)
-```
-
-## Deployment
-
-### Docker Setup
-
-1. **Build the image**:
-```bash
-docker build -t prismsynth-environment .
-```
-
-2. **Run the container**:
-```bash
-docker run -p 8001:8001 \
-  -v $(pwd)/configs:/app/configs \
-  -e LLM_SERVICE_URL=http://llm-interface:8000 \
-  prismsynth-environment
-```
-
-3. **Docker Compose**:
-```yaml
-version: '3.8'
-services:
-  environment-service:
-    build: .
-    ports:
-      - "8001:8001"
-    environment:
-      - LLM_SERVICE_URL=http://llm-interface:8000
-    volumes:
-      - ./configs:/app/configs
-    depends_on:
-      - llm-interface
-```
-
-### Local Development
-
-1. **Install dependencies**:
-```bash
-pip install -r requirements.txt
-```
-
-2. **Set environment variables**:
-```bash
-export LLM_SERVICE_URL=http://localhost:8000
-export ENV_OUTPUT_DIR=/tmp/env_outputs
-```
-
-3. **Run the service**:
-```bash
-uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
-```
-
-### Production Deployment
-
-The service uses Gunicorn for production deployment:
-
-```bash
-gunicorn -k uvicorn.workers.UvicornWorker src.main:app \
-  --bind 0.0.0.0:8001 \
-  --workers 5 \
-  --max-requests 100 \
-  --max-requests-jitter 15 \
-  --timeout 30
-```
-
-## Guidelines
-
-- **Naming Convention**: Environment modules must start with `environment_` prefix
-- **Registration**: Always use `@environment_registry.register_environment_method()` decorator
-- **Testing**: Write comprehensive tests for custom environments
-- **Documentation**: Document custom environment behavior and configuration
-
----
-
-For more information, see the [main PrismBench documentation](../../../docs/).
+For system-level context, see the repository docs in [`docs/`](../../../docs/).
