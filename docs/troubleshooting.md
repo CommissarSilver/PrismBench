@@ -1,13 +1,3 @@
-# Troubleshooting
-
-*This page contains the content from the original troubleshooting.md file - you'll need to copy the content from that file here for GitHub Wiki compatibility.*
-
-For now, this is a placeholder. Please copy the content from `docs/troubleshooting.md` to this file.
-
----
-
-**[Back to Tree Structure](Tree-Structure)** | **[Back to Home](Home)**
-
 # Troubleshooting Guide
 
 This guide covers common issues, error messages, and solutions when working with PrismBench. Use this as your first reference when encountering problems.
@@ -37,9 +27,10 @@ Check service logs for immediate issues:
 
 ```bash
 # Service logs (if using Docker Compose)
-docker-compose logs llm-interface
-docker-compose logs environment-service
-docker-compose logs search-service
+docker compose -f docker/docker-compose.yaml logs llm-interface
+docker compose -f docker/docker-compose.yaml logs node-env
+docker compose -f docker/docker-compose.yaml logs search
+docker compose -f docker/docker-compose.yaml logs gui
 
 # Local development logs
 tail -f logs/llm_interface.log
@@ -95,7 +86,7 @@ uvicorn main:app --port 8010  # Alternative port
 
 **Symptoms:**
 ```bash
-FileNotFoundError: [Errno 2] No such file or directory: 'configs/agents.yml'
+FileNotFoundError: [Errno 2] No such file or directory: 'configs/agents/challenge_designer.yaml'
 ```
 
 **Solution:**
@@ -109,7 +100,7 @@ cd /path/to/PrismBench
 ls configs/agents/
 
 # Copy template configs if missing
-cp configs/agents/agent_template.yml configs/agents/my_agent.yml
+cp configs/agents/agent_template.yaml configs/agents/my_agent.yaml
 ```
 
 ## API Keys & Authentication
@@ -125,13 +116,13 @@ AuthenticationError: Invalid API key provided
 **Solution:**
 ```bash
 # Create apis.key file
-cp apis.key.example apis.key
+cp apis.key.template apis.key
 
 # Add your API keys
-echo "OPENAI_API_KEY = sk-your-key-here" >> apis.key
-echo "ANTHROPIC_API_KEY = your-anthropic-key" >> apis.key
+echo "OPENAI_API_KEY=sk-your-key-here" >> apis.key
+echo "ANTHROPIC_API_KEY=your-anthropic-key" >> apis.key
 
-# Verify format (no quotes, spaces around =)
+# Verify format (no quotes)
 cat apis.key
 ```
 
@@ -146,13 +137,13 @@ openai.error.AuthenticationError: Invalid API key provided
 ```bash
 # Check key format in apis.key
 # Correct format:
-OPENAI_API_KEY = sk-proj-abc123...
-ANTHROPIC_API_KEY = sk-ant-api03-abc123...
+OPENAI_API_KEY=sk-proj-abc123...
+ANTHROPIC_API_KEY=sk-ant-api03-abc123...
 
 # Incorrect formats:
 # OPENAI_API_KEY="sk-proj-abc123..."  # Remove quotes
-# OPENAI_API_KEY=sk-proj-abc123...    # Add spaces around =
-# OPENAI_API_KEY = 'sk-proj-abc123...' # Remove quotes
+# OPENAI_API_KEY = sk-proj-abc123...  # Remove spaces around =
+# OPENAI_API_KEY = 'sk-proj-abc123...' # Remove quotes and spaces
 ```
 
 ### Issue: API Rate Limits
@@ -165,8 +156,7 @@ openai.error.RateLimitError: Rate limit reached
 **Solution:**
 ```python
 # Implement exponential backoff in agent configs
-configs:
-  params:
+model_params:
     retry_attempts: 3
     retry_delay: 2.0
     exponential_backoff: true
@@ -194,11 +184,11 @@ curl http://localhost:8000/health
 
 # Start the missing service
 cd src/services/llm_interface
-uvicorn main:app --reload --port 8000
+uvicorn src.services.llm_interface.src.main:app --reload --port 8000
 
 # Check Docker services
-docker-compose ps
-docker-compose up -d
+docker compose -f docker/docker-compose.yaml ps
+docker compose -f docker/docker-compose.yaml up -d
 ```
 
 ### Issue: Service Timeout
@@ -240,7 +230,7 @@ redis-server
 redis-cli FLUSHALL
 
 # In Docker
-docker-compose restart redis
+docker compose -f docker/docker-compose.yaml restart redis
 ```
 
 ## Agent Issues
@@ -249,7 +239,7 @@ docker-compose restart redis
 
 **Symptoms:**
 ```bash
-FileNotFoundError: configs/agents/unknown_agent.yml
+FileNotFoundError: configs/agents/unknown_agent.yaml
 AgentConfigurationError: Invalid agent configuration
 ```
 
@@ -262,32 +252,30 @@ ls configs/agents/
 cat configs/environment_config.yaml
 
 # Ensure agent file exists and matches name
-# File: configs/agents/challenge_designer.yml
-# Config: agent_name: challenge_designer
+# File: configs/agents/challenge_designer.yaml
+# Config: role: challenge_designer
 ```
 
 ### Issue: Agent Response Parsing Error
 
 **Symptoms:**
 ```bash
-ValueError: Could not extract response from agent output
-ParsingError: Response delimiters not found
+ValueError: No matching interaction template for input_data keys
+ValidationError: response field missing from template outputs
 ```
 
 **Solution:**
 ```yaml
-# Check agent configuration output format
+# Check interaction template input/output contract
 interaction_templates:
-  - name: basic
-    output_format:
-      response_begin: <problem_description>  # Must match exactly
-      response_end: </problem_description>   # Must match exactly
+  default:
+    inputs:
+      - name: concepts
+      - name: difficulty_level
+    outputs:
+      - name: response
 
-# Verify agent prompt includes delimiter instructions
-system_prompt: >
-  ...
-  **IMPORTANT:** You must enclose the entire problem description 
-  within `<problem_description>` and `</problem_description>` delimiters.
+# Ensure request keys exactly match one template's input names
 ```
 
 ### Issue: Agent Model Not Available
@@ -300,11 +288,9 @@ openai.error.InvalidRequestError: The model 'gpt-5' does not exist
 **Solution:**
 ```yaml
 # Use available models in agent configs
-configs:
-  model_name: gpt-4o-mini      # Available
-  # model_name: gpt-5          # Not available
-  # model_name: claude-4       # Not available
-  model_name: claude-3-5-sonnet-20240620  # Available
+model_name: gpt-4o-mini  # Available
+# model_name: gpt-5      # Not available
+# model_name: claude-4   # Not available
 ```
 
 ## Environment Issues
@@ -351,8 +337,8 @@ def test_code_validation():
         return False
 
 # Increase execution timeout
-configs:
-  timeout: 60  # Increase timeout
+environment_config:
+  timeout: 600  # Increase timeout
 
 # Check for infinite loops in test code
 # Add timeout wrapper in test execution
@@ -533,13 +519,12 @@ docker: Error response from daemon: network not found
 
 **Solution:**
 ```yaml
-# Check docker-compose.yml networks
-version: '3.8'
+# Check docker/docker-compose.yaml networks
 services:
   llm-interface:
     networks:
       - prism-network
-  search-service:
+  search:
     networks:
       - prism-network
 
@@ -563,8 +548,8 @@ chown -R 1000:1000 configs/  # If using specific user
 
 # Update docker-compose.yml
 volumes:
-  - ./configs:/app/configs:ro  # Read-only mount
-  - ./data:/app/data:rw        # Read-write mount
+  - ../configs:/app/configs:ro  # Read-only mount
+  - ../data:/app/data:rw        # Read-write mount
 ```
 
 ## Debugging Strategies
@@ -613,12 +598,12 @@ def validate_config():
         errors.append("Missing apis.key file")
     
     # Check agent configs
-    for agent_file in glob.glob('configs/agents/*.yml'):
+    for agent_file in glob.glob('configs/agents/*.yaml'):
         try:
             with open(agent_file) as f:
                 config = yaml.safe_load(f)
-                if 'agent_name' not in config:
-                    errors.append(f"Missing agent_name in {agent_file}")
+                if 'role' not in config:
+                    errors.append(f"Missing role in {agent_file}")
         except yaml.YAMLError as e:
             errors.append(f"Invalid YAML in {agent_file}: {e}")
     
@@ -705,10 +690,10 @@ Before seeking help, verify:
 ---
 
 **Related Documentation:**
-- [Quick Start](quickstart.md) - Basic setup guide
-- [Configuration Overview](config-overview.md) - Detailed configuration
-- [Architecture](architecture.md) - System architecture
-- [Best Practices](best-practices.md) - Recommended approaches
+- [Quick Start](Quick-Start) - Basic setup guide
+- [Configuration Overview](Configuration-Overview) - Detailed configuration
+- [Architecture Overview](Architecture-Overview) - System architecture
+- [Extending PrismBench](Extending-PrismBench) - Recommended approaches
 
 ---
 

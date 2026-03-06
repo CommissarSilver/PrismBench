@@ -11,7 +11,7 @@ Agents in PrismBench are defined through **YAML configuration files** that speci
 - **LLM Configuration**: Model, provider, and parameters
 - **System Prompts**: Specialized instructions and expertise
 - **Interaction Templates**: Structured input/output patterns
-- **Output Formatting**: Response parsing and extraction
+- **Output Fields**: Structured response contracts
 
 ---
 
@@ -20,35 +20,39 @@ Agents in PrismBench are defined through **YAML configuration files** that speci
 ### **Configuration Structure**
 
 ```yaml
-agent_name: my_custom_agent
-
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
-  params:
-    temperature: 0.7
-    max_tokens: 2048
-  local: false
+role: my_custom_agent
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.7
+  max_tokens: 2048
 
 system_prompt: >
   Your specialized agent instructions here...
 
 interaction_templates:
-  - name: basic
-    required_keys: [input_param1, input_param2]
-    template: >
-      Template with {input_param1} and {input_param2}
-    output_format:
-      response_begin: <tag>
-      response_end: </tag>
+  default:
+    inputs:
+      - name: input_param1
+        type: str
+        description: First input
+      - name: input_param2
+        type: str
+        description: Second input
+    outputs:
+      - name: response
+        type: str
+        description: Agent response
 ```
 
 ### **Component Breakdown**
 
 | Component | Purpose | Required |
 |-----------|---------|----------|
-| `agent_name` | Unique identifier for the agent | Yes |
-| `configs` | LLM provider and model settings | Yes |
+| `role` | Unique identifier for the agent | Yes |
+| `model_name`/`model_provider`/`api_base` | LLM routing settings | Yes |
+| `model_params` | Model parameter overrides | No |
 | `system_prompt` | Agent's expertise and instructions | Yes |
 | `interaction_templates` | Input/output patterns | Yes |
 
@@ -61,23 +65,21 @@ interaction_templates:
 Create a new YAML file in `configs/agents/`:
 
 ```yaml
-agent_name: domain_expert
-
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
-  params:
-    temperature: 0.8
-    max_tokens: 4096
-  local: false
+role: domain_expert
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.8
+  max_tokens: 4096
 ```
 
 **Supported Providers:**
 - `openai` - OpenAI models (GPT-4, GPT-3.5, etc.)
 - `anthropic` - Anthropic models (Claude)
-- `together` - Together AI models
+- `openrouter` - OpenRouter-hosted models
 - `deepseek` - DeepSeek models
-- Custom providers via LangChain
+- `togetherai` - Together AI models
 
 ### **Step 2: System Prompt Design**
 
@@ -106,27 +108,30 @@ Define how the agent receives input and formats output:
 
 ```yaml
 interaction_templates:
-  - name: analyze
-    required_keys: [data, criteria]
-    template: >
-      Analyze the following data: {data}
-      
-      Use these criteria: {criteria}
-      
-      Provide your analysis with reasoning.
-    output_format:
-      response_begin: <analysis>
-      response_end: </analysis>
-      
-  - name: generate
-    required_keys: [requirements, constraints]
-    template: >
-      Generate content based on:
-      Requirements: {requirements}
-      Constraints: {constraints}
-    output_format:
-      response_begin: <generated_content>
-      response_end: </generated_content>
+  analyze:
+    inputs:
+      - name: data
+        type: str
+        description: Data to analyze
+      - name: criteria
+        type: str
+        description: Analysis criteria
+    outputs:
+      - name: response
+        type: str
+        description: Analysis output
+  generate:
+    inputs:
+      - name: requirements
+        type: str
+        description: Output requirements
+      - name: constraints
+        type: str
+        description: Constraints
+    outputs:
+      - name: response
+        type: str
+        description: Generated content
 ```
 
 ---
@@ -134,15 +139,13 @@ interaction_templates:
 ## Complete Example: Problem Solver Agent
 
 ```yaml
-agent_name: problem_solver
-
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
-  params:
-    temperature: 0.8
-    max_tokens: 5120
-  local: false
+role: problem_solver
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.8
+  max_tokens: 5120
 
 system_prompt: >
   You are a skilled programmer with expertise in algorithm design and implementation. Your role is to develop efficient,
@@ -160,28 +163,29 @@ system_prompt: >
   Ensure your implementation handles all specified constraints and edge cases.
   Write clear, concise comments to explain your approach and any non-obvious parts of the code.
 
-  **IMPORTANT**: You must enclose the entire solution code you generate within <generated_solution> and </generated_solution>
-  delimiters. This is crucial for extracting the solution from your output.
-
   **IMPORTANT**: You must name the generated function as 'solution'. This is used for extracting the output.
 
   **IMPORTANT**: The entire solution must be enclosed in the 'solution' function.
 
 interaction_templates:
-  - name: basic
-    required_keys: [problem_statement]
-    template: >
-      Generate a solution for the following problem: {problem_statement}
-    output_format:
-      response_begin: <generated_solution>
-      response_end: </generated_solution>
-  - name: fix
-    required_keys: [error_feedback]
-    template: >
-      Previous solution attempt failed. Here is the error feedback: {error_feedback}. Try again.
-    output_format:
-      response_begin: <generated_solution>
-      response_end: </generated_solution>
+  default:
+    inputs:
+      - name: problem_statement
+        type: str
+        description: Problem to solve
+    outputs:
+      - name: response
+        type: str
+        description: Generated Python solution
+  fix:
+    inputs:
+      - name: error_feedback
+        type: str
+        description: Feedback from previous attempt
+    outputs:
+      - name: response
+        type: str
+        description: Corrected Python solution
 
 ```
 
@@ -195,35 +199,42 @@ Agents can have multiple interaction patterns:
 
 ```yaml
 interaction_templates:
-  - name: basic
-    required_keys: [input]
-    template: "Process: {input}"
-    output_format:
-      response_begin: <result>
-      response_end: </result>
-      
-  - name: detailed
-    required_keys: [input, context, requirements]
-    template: >
-      Input: {input}
-      Context: {context}
-      Requirements: {requirements}
-      
-      Provide detailed analysis.
-    output_format:
-      response_begin: <detailed_result>
-      response_end: </detailed_result>
-      
-  - name: fix_errors
-    required_keys: [original_work, error_feedback]
-    template: >
-      Original work: {original_work}
-      Error feedback: {error_feedback}
-      
-      Provide corrected version.
-    output_format:
-      response_begin: <corrected_work>
-      response_end: </corrected_work>
+  basic:
+    inputs:
+      - name: input
+        type: str
+        description: Main input
+    outputs:
+      - name: response
+        type: str
+        description: Result
+  detailed:
+    inputs:
+      - name: input
+        type: str
+        description: Main input
+      - name: context
+        type: str
+        description: Additional context
+      - name: requirements
+        type: str
+        description: Output requirements
+    outputs:
+      - name: response
+        type: str
+        description: Detailed result
+  fix_errors:
+    inputs:
+      - name: original_work
+        type: str
+        description: Previous output
+      - name: error_feedback
+        type: str
+        description: Error feedback
+    outputs:
+      - name: response
+        type: str
+        description: Corrected output
 ```
 
 ### **Provider-Specific Configuration**
@@ -232,31 +243,30 @@ Customize for different LLM providers:
 
 ```yaml
 # OpenAI Configuration
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
-  params:
-    temperature: 0.7
-    max_tokens: 2048
-    top_p: 0.9
-    frequency_penalty: 0.1
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.7
+  max_tokens: 2048
+  top_p: 0.9
+  frequency_penalty: 0.1
 
 # Anthropic Configuration  
-configs:
-  model_name: claude-3-5-sonnet-20240620
-  provider: anthropic
-  params:
-    temperature: 0.8
-    max_tokens: 4096
+model_name: claude-3-5-sonnet-20240620
+model_provider: openrouter
+api_base: https://openrouter.ai/api/v1
+model_params:
+  temperature: 0.8
+  max_tokens: 4096
 
 # Local Model Configuration
-configs:
-  model_name: llama3.1-70b
-  provider: together
-  params:
-    temperature: 0.6
-    max_tokens: 8192
-  local: true
+model_name: llama3.1-70b
+model_provider: togetherai
+api_base: https://api.together.xyz/v1
+model_params:
+  temperature: 0.6
+  max_tokens: 8192
 ```
 
 ---
@@ -270,27 +280,25 @@ Test your agent using the LLM Interface API:
 ```python
 import requests
 
-# 1. Initialize session
-response = requests.post("http://localhost:8000/initialize", 
-    json={"role": "math_tutor"})
-session_id = response.json()["session_id"]
+# 1. Use your own session id
+session_id = "manual-test-math-tutor-001"
 
 # 2. Interact with agent
 response = requests.post("http://localhost:8000/interact", json={
     "session_id": session_id,
+    "role": "math_tutor",
     "input_data": {
         "topic": "quadratic equations",
         "difficulty": "medium", 
         "context": "high school algebra"
     },
-    "template_name": "create_problem"
+    "use_agent": False
 })
+print(response.json()["message"])
 
-task_id = response.json()["task_id"]
-
-# 3. Check results
-response = requests.get(f"http://localhost:8000/task_status/{task_id}")
-print(response.json()["result"])
+# 3. (Optional) inspect stored conversation history
+history = requests.get(f"http://localhost:8000/session_history/{session_id}")
+print(history.json())
 ```
 
 ### **Integration Testing**
@@ -346,8 +354,8 @@ results = await environment.execute_node(
 | Issue | Cause | Solution |
 |-------|-------|----------|
 | Agent not found | File not in `configs/agents/` | Check file location and naming |
-| Template errors | Missing required keys | Verify template parameter names |
-| Output parsing fails | Incorrect delimiters | Check output format configuration |
+| Template errors | Input/output fields mismatch | Verify `interaction_templates` inputs and outputs |
+| Output parsing fails | Missing `response` output field | Ensure template outputs include a `response` field |
 | API errors | Invalid provider config | Verify API keys and model names |
 
 ### **Debugging Tips**
@@ -382,4 +390,4 @@ results = await environment.execute_node(
 ### **Implementation**
 - [Extending PrismBench](Extending-PrismBench) - Framework extension overview
 - [Quick Start](Quick-Start) - Getting started with the framework
-- [Troubleshooting](Troubleshooting) - Agent-related issues and solutions
+- [Troubleshooting](troubleshooting) - Agent-related issues and solutions

@@ -1,13 +1,5 @@
 # Tree Structure
 
-*This page contains the content from the original tree-structure.md file - you'll need to copy the content from that file here for GitHub Wiki compatibility.*
-
-For now, this is a placeholder. Please copy the content from `docs/tree-structure.md` to this file.
-
----
-
-**[Back to Results Analysis](Results-Analysis)** | **[Troubleshooting](Troubleshooting)**
-
 The search tree is the core data structure in PrismBench's MCTS algorithm. It represents the exploration space of concept-difficulty combinations and tracks the evaluation history for intelligent search guidance.
 
 ## Tree Architecture
@@ -462,10 +454,10 @@ def deserialize_tree(data: bytes) -> Tree:
 ---
 
 **Next Steps:**
-- [MCTS Algorithm](mcts.md) - How MCTS uses the tree structure
-- [Search API](api-search.md) - API for tree operations
-- [Results Analysis](analysis.md) - Analyzing tree data
-- [Best Practices](best-practices.md) - Tree optimization strategies
+- [MCTS Algorithm](MCTS-Algorithm) - How MCTS uses the tree structure
+- [Search Service README](../src/services/search/README.md) - API and tree endpoints
+- [Results Analysis](Results-Analysis) - Analyzing tree data
+- [Best Practices](Extending-PrismBench) - Tree optimization strategies
 
 ---
 
@@ -484,4 +476,4 @@ def deserialize_tree(data: bytes) -> Tree:
 ### **Implementation**
 - [Configuration Overview](Configuration-Overview) - Tree configuration parameters
 - [Extending PrismBench](Extending-PrismBench) - Framework extensions
-- [Troubleshooting](Troubleshooting) - Tree-related issues and solutions 
+- [Troubleshooting](troubleshooting) - Tree-related issues and solutions 

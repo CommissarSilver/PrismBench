@@ -33,16 +33,16 @@ graph TB
 
 | File | Purpose | Service | Description |
 |------|---------|---------|-------------|
-| `configs/agents/*.yml` | Agent Definitions | LLM Interface | Individual agent role configurations |
+| `configs/agents/*.yaml` | Agent Definitions | LLM Interface | Role-based agent configurations |
 | `configs/environment_config.yaml` | Environment Setup | Environment | Available environments and their agents |
 | `configs/phase_configs.yaml` | MCTS Parameters | Search | Phase-specific algorithm parameters |
 | `configs/tree_configs.yaml` | Search Space | Search | Concepts and difficulties to explore |
 | `configs/experiment_configs.yaml` | Experiment Setup | Search | Experiment configuration and phase sequences |
 | `apis.key` | API Credentials | LLM Interface | API keys for LLM providers |
 
-## 1. Agent Configurations (`configs/agents/*.yml`)
+## 1. Agent Configurations (`configs/agents/*.yaml`)
 
-Agent configurations define the behavior, prompts, and model settings for each specialized agent.
+Agent configurations define role behavior, model settings, and input/output contracts for each agent.
 
 ### Purpose
 - Define agent roles and responsibilities
@@ -52,39 +52,43 @@ Agent configurations define the behavior, prompts, and model settings for each s
 
 ### File Structure
 ```yaml
-agent_name: challenge_designer
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
-  params:
-    temperature: 0.8
-    max_tokens: 5120
-  local: false
+role: challenge_designer
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.8
+  max_tokens: 5120
 system_prompt: >
   You are an expert computer science educator...
 interaction_templates:
-  - name: basic
-    required_keys: [concepts, difficulty_level]
-    template: >
-      Generate a coding problem for: {concepts}...
-    output_format:
-      response_begin: <problem_description>
-      response_end: </problem_description>
+  default:
+    inputs:
+      - name: concepts
+        type: list[str]
+        description: List of target concepts
+      - name: difficulty_level
+        type: str
+        description: Difficulty value
+    outputs:
+      - name: response
+        type: str
+        description: Generated output
 ```
 
 ### Key Sections
 
 #### Agent Identity
-- `agent_name`: Unique identifier for the agent
+- `role`: Unique identifier for the agent (must match filename)
 - Used throughout the framework to reference this agent
 
 #### Model Configuration
 - `model_name`: Specific model to use (e.g., "gpt-4o-mini")
-- `provider`: LLM provider ("openai", "anthropic", "deepseek", etc.)
-- `params`: Model-specific parameters
+- `model_provider`: LLM provider (`openai`, `openrouter`, `deepseek`, `togetherai`)
+- `api_base`: Provider base URL
+- `model_params`: Model-specific parameters
   - `temperature`: Creativity level (0.0-1.0)
   - `max_tokens`: Maximum response length
-- `local`: Whether this is a local model
 
 #### Prompt Engineering
 - `system_prompt`: Core instructions defining the agent's role
@@ -92,10 +96,10 @@ interaction_templates:
 - Critical for consistent agent performance
 
 #### Interaction Templates
-- `name`: Template identifier
-- `required_keys`: Input parameters needed
-- `template`: Formatted prompt template with placeholders
-- `output_format`: Expected response delimiters
+- Template name key (e.g. `default`, `fix`)
+- `inputs`: Input fields with `name`, `description`, and optional `type`
+- `outputs`: Output fields with `name`, `description`, and optional `type`
+- In practice, include an output field named `response`
 
 ### Available Agents
 
@@ -164,7 +168,7 @@ environment_enhanced_coding_challenge:
 
 #### Enhanced Coding Challenge
 - Extended six-agent workflow
-- Multiple problems per evaluation
+- `num_problems` is configurable, but built-in strategies currently execute one problem per request
 - Additional validation and analysis
 - Comprehensive evaluation mode
 
@@ -391,11 +395,11 @@ Stores authentication credentials for LLM providers.
 
 ### File Format
 ```bash
-OPENAI_API_KEY = sk-your-openai-key-here
-ANTHROPIC_API_KEY = your-anthropic-key-here
-DEEPSEEK_API_KEY = your-deepseek-key-here
-CHATLAMMA_API_KEY = your-chatlamma-key-here
-LOCAL = your-local-api-key-or-token
+OPENAI_API_KEY=sk-your-openai-key-here
+ANTHROPIC_API_KEY=your-anthropic-key-here
+DEEPSEEK_API_KEY=your-key-here
+TOGETHERAI_API_KEY=your-key-here
+LOCAL_AI_BASE_URL=http://ollama:11434/
 ```
 
 ### Supported Providers
@@ -404,8 +408,10 @@ LOCAL = your-local-api-key-or-token
 |----------|------------|-------|
 | OpenAI | `sk-...` | GPT models |
 | Anthropic | `ant-...` | Claude models |
+| OpenRouter | Custom | OpenRouter-backed models |
 | DeepSeek | Custom | DeepSeek models |
-| Local | Custom | ollama/LMstudio |
+| Together AI | Custom | Together-hosted models |
+| Local | URL | `LOCAL_AI_BASE_URL` for ollama/LM Studio |
 
 
 ## Configuration Validation
@@ -426,10 +432,10 @@ Recommended checks:
 ---
 
 **Next Steps:**
-- [Agent Configurations](config-agents.md) - Detailed agent configuration guide
-- [Environment Configurations](config-environments.md) - Environment setup details
-- [Phase Configurations](config-phases.md) - MCTS parameter tuning
-- [Tree Configurations](config-tree.md) - Search space configuration
+- [Agent System](Agent-System) - Agent behavior and contracts
+- [Environment System](Environment-System) - Environment setup details
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Phase parameter tuning
+- [tree-structure](tree-structure) - Search space shape and behavior
 
 ---
 
@@ -444,7 +450,7 @@ Recommended checks:
 ### **Getting Started**
 - [Quick Start](Quick-Start) - Basic configuration setup
 - [Architecture Overview](Architecture-Overview) - System design and components
-- [Troubleshooting](Troubleshooting) - Configuration-related issues
+- [Troubleshooting](troubleshooting) - Configuration-related issues
 
 ### **Advanced Configuration**
 - [Custom MCTS Phases](Custom-MCTS-Phases) - Phase configuration parameters

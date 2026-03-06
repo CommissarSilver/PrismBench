@@ -246,7 +246,7 @@ For implementation details, see the [Search Service README](../src/services/sear
 ## Related Pages
 
 ### **Tree & Search**
-- [Tree Structure](Tree-Structure) - Search tree implementation details
+- [Tree Structure](tree-structure) - Search tree implementation details
 - [Custom MCTS Phases](Custom-MCTS-Phases) - Implementing custom search strategies
 - [Results Analysis](Results-Analysis) - Analyzing MCTS results
 

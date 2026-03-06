@@ -100,13 +100,13 @@ Difficulty: [Level]
 
 **Configuration Example**:
 ```yaml
-agent_name: challenge_designer
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
-  params:
-    temperature: 0.8  # High creativity for diverse problems
-    max_tokens: 5120
+role: challenge_designer
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.8  # High creativity for diverse problems
+  max_tokens: 5120
 system_prompt: >
   You are an expert computer science educator specializing in creating 
   coding challenges...
@@ -327,8 +327,9 @@ Suggested Areas to Investigate:
 Each agent is defined by a YAML configuration file with four main sections:
 
 ```yaml
-agent_name: [unique_identifier]
-configs: [model and provider settings]
+role: [unique_identifier]
+model_name/model_provider/api_base: [provider settings]
+model_params: [optional generation settings]
 system_prompt: [role definition and instructions]
 interaction_templates: [input/output templates]
 ```
@@ -338,13 +339,12 @@ interaction_templates: [input/output templates]
 Agents can use different models optimized for their tasks:
 
 ```yaml
-configs:
-  model_name: gpt-4o-mini    # Model selection
-  provider: openai          # Provider choice
-  params:
-    temperature: 0.8        # Creativity level
-    max_tokens: 5120        # Response length
-  local: false              # Local vs cloud model
+model_name: gpt-4o-mini      # Model selection
+model_provider: openai       # Provider choice
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.8           # Creativity level
+  max_tokens: 5120           # Response length
 ```
 
 ### Prompt Engineering
@@ -369,13 +369,18 @@ Templates define how agents receive inputs and format outputs:
 
 ```yaml
 interaction_templates:
-  - name: basic
-    required_keys: [input1, input2]
-    template: >
-      [Input processing template with {placeholders}]
-    output_format:
-      response_begin: <tag>
-      response_end: </tag>
+  basic:
+    inputs:
+      - name: input1
+        type: str
+        description: First input field
+      - name: input2
+        type: str
+        description: Second input field
+    outputs:
+      - name: response
+        type: str
+        description: Agent output
 ```
 
 ## Agent Workflows
@@ -442,12 +447,11 @@ sequenceDiagram
 
 Agents communicate through the LLM Interface Service:
 
-1. **Session Initialization**: Create agent-specific session
-2. **Request Submission**: Send task with formatted input
-3. **Asynchronous Processing**: Task queued and processed
-4. **Status Monitoring**: Poll for completion
-5. **Result Retrieval**: Extract formatted output
-6. **Session Cleanup**: Clean up resources
+1. **Request Submission**: Call `POST /interact` with `session_id`, `role`, and `input_data`
+2. **Template Resolution**: LLM Interface selects the matching interaction template by input keys
+3. **Synchronous Response**: Receive `{message, session_id}` directly
+4. **History Access**: Inspect role history via `GET /session_history/{session_id}`
+5. **Session Cleanup**: Remove stored session data via `DELETE /session/{session_id}`
 
 ### Input/Output Formatting
 
@@ -457,6 +461,7 @@ Standardized communication format:
 # Input to agent
 {
     "session_id": "uuid",
+    "role": "challenge_designer",
     "input_data": {
         "concepts": ["loops", "arrays"],
         "difficulty_level": "medium",
@@ -467,10 +472,8 @@ Standardized communication format:
 
 # Output from agent
 {
-    "status": "completed",
-    "result": {
-        "response": "[formatted response with delimiters]"
-    }
+    "message": "[agent response text]",
+    "session_id": "uuid"
 }
 ```
 
@@ -491,12 +494,12 @@ Agents can be configured with different models for different tasks:
 ```yaml
 # High creativity for problem generation
 challenge_designer:
-  configs:
+  model_params:
     temperature: 0.8
     
 # Low temperature for code generation
 problem_solver:
-  configs:
+  model_params:
     temperature: 0.2
 ```
 
@@ -505,17 +508,25 @@ problem_solver:
 Create domain-specific agents:
 
 ```yaml
-agent_name: security_analyst
-configs:
-  model_name: gpt-4o-mini
-  provider: openai
+role: security_analyst
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
 system_prompt: >
   You are a cybersecurity expert specializing in code security analysis...
 interaction_templates:
-  - name: security_review
-    required_keys: [code, security_requirements]
-    template: >
-      Analyze the following code for security vulnerabilities: {code}
+  security_review:
+    inputs:
+      - name: code
+        type: str
+        description: Source code to review
+      - name: security_requirements
+        type: str
+        description: Security requirements
+    outputs:
+      - name: response
+        type: str
+        description: Security review report
 ```
 
 ### Agent Composition
@@ -551,10 +562,10 @@ Optimize repeated operations:
 ---
 
 **Next Steps:**
-- [Environment System](environments.md) - How agents work within environments
-- [Agent Configurations](config-agents.md) - Detailed configuration guide
-- [Custom Agents](custom-agents.md) - Creating new agent types
-- [Examples](examples-basic.md) - Agent usage examples
+- [Environment System](Environment-System) - How agents work within environments
+- [Configuration Overview](Configuration-Overview) - Detailed configuration guide
+- [Custom Agents](Custom-Agents) - Creating new agent types
+- [Extending PrismBench](Extending-PrismBench) - Agent usage examples
 
 ---
 
@@ -573,4 +584,4 @@ Optimize repeated operations:
 ### **Implementation**
 - [Extending PrismBench](Extending-PrismBench) - Framework extension overview
 - [Results Analysis](Results-Analysis) - Understanding agent performance
-- [Troubleshooting](Troubleshooting) - Agent-related issues and solutions 
+- [Troubleshooting](troubleshooting) - Agent-related issues and solutions 

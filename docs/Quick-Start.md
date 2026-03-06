@@ -1,35 +1,32 @@
 # Quick Start Guide
 
-This guide will get you up and running with PrismBench in under 5 minutes.
+This guide gets PrismBench running locally with the current microservice stack.
 
 ## Prerequisites
 
-- Python 3.12 or higher
-- Docker and Docker Compose
+- Python 3.12+
+- Docker with Compose
 - Git
 
 ## Installation
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/PrismBench/PrismBench.git
 cd PrismBench
 ```
 
-### 2. Set Up Python Environment (Recommended but not necessary)
+### 2. Set up a Python environment (optional but recommended)
 
 ```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-source venv/bin/activate  # Unix/macOS
+python -m venv .venv
+source .venv/bin/activate  # Unix/macOS
 # or
-.\venv\Scripts\activate   # Windows
+.\.venv\Scripts\activate   # Windows
 ```
 
-### 3. Install Dependencies
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -37,69 +34,73 @@ pip install -r requirements.txt
 
 ## Configuration
 
-### Setting up API Keys
+### 1. Set up API keys
 
-PrismBench supports any model that follows the [OpenAI text generation standard](https://platform.openai.com/docs/guides/text-generation). This includes OpenAI models, local models through `ollama` or `LMstudio`, and other API providers.
-
-Create an `apis.key` file in the root directory:
+Create `apis.key` from the template:
 
 ```bash
-OPENAI_API_KEY = your_openai_api_key
-DEEPSEEK_API_KEY = your_deepseek_api_key
-CHATLAMMA_API_KEY = your_chatlamma_api_key
-LOCAL = your_custom_api_key # only used for ollama and LMstudio
+cp apis.key.template apis.key
 ```
 
-### Selecting Models
+Use `KEY=value` format (no quotes), for example:
 
-Configure the model to benchmark in `configs/agents.yml`:
+```bash
+OPENAI_API_KEY=sk-your-openai-key-here
+ANTHROPIC_API_KEY=your-anthropic-key-here
+DEEPSEEK_API_KEY=your-key-here
+TOGETHERAI_API_KEY=your-key-here
+LOCAL_AI_BASE_URL=http://ollama:11434/
+```
+
+### 2. Select model settings
+
+PrismBench agent configs are role-based files in `configs/agents/*.yaml`.
+Edit the agents you plan to use, for example `configs/agents/challenge_designer.yaml`:
 
 ```yaml
-model: "gpt-4o-mini"  # Change to your preferred model
-# For local models, use: "local"
+role: challenge_designer
+model_name: gpt-4o-mini
+model_provider: openai
+api_base: https://api.openai.com/v1/
+model_params:
+  temperature: 0.8
+  max_tokens: 5120
 ```
 
 ## Running PrismBench
 
-### Start the Services
+### Start services
+
+From repository root:
 
 ```bash
-docker compose up
+docker compose -f docker/docker-compose.yaml up --build
 ```
 
-This starts three main services:
+This starts four microservices:
 
-- **LLM Interface** (`localhost:8000`) - Handles model communication
-- **Environment** (`localhost:8001`) - Executes code challenges  
-- **Search** (`localhost:8002`) - Main MCTS framework entry point
+- **LLM Interface** (`http://localhost:8000`)
+- **Environment** (`http://localhost:8001`)
+- **Search** (`http://localhost:8002`)
+- **GUI** (`http://localhost:3000`)
 
-### Run a Complete Evaluation
+### Run a complete evaluation
 
-Access the search service at `localhost:8002` and trigger a full evaluation run through the API endpoints.
+Use either:
+
+- the GUI at `http://localhost:3000`, or
+- the Search API (`/initialize`, `/run`, `/tasks/{task_id}`) at `http://localhost:8002`.
 
 ## Next Steps
 
-- [Configuration Overview](config-overview.md) - Detailed configuration options
-- [MCTS Algorithm](mcts.md) - Understanding the core algorithm
-- [Results Analysis](analysis.md) - Interpreting your results
+- [Configuration Overview](Configuration-Overview) - Detailed configuration options
+- [Architecture Overview](Architecture-Overview) - Service and data flow details
+- [MCTS Algorithm](MCTS-Algorithm) - Search process details
+- [Results Analysis](Results-Analysis) - Interpreting outputs
 
 ## Troubleshooting
 
-### Common Issues
-
-**Docker containers not starting:**
-- Ensure Docker is running
-- Check port availability (8000, 8001, 8002)
-
-**API key errors:**
-- Verify your `apis.key` file format
-- Check API key validity
-
-**Model selection issues:**
-- Ensure model name matches API provider format
-- For local models, verify ollama/LMstudio is running
-
-For more help, see our [Troubleshooting Guide](troubleshooting.md) or open an issue on GitHub.
+For common setup and runtime issues, see [troubleshooting](troubleshooting).
 
 ---
 
@@ -118,4 +119,4 @@ For more help, see our [Troubleshooting Guide](troubleshooting.md) or open an is
 ### **Advanced Usage**
 - [Extending PrismBench](Extending-PrismBench) - Customizing the framework
 - [Custom Agents](Custom-Agents) - Creating specialized agents
-- [Troubleshooting](Troubleshooting) - Common issues and solutions 
+- [troubleshooting](troubleshooting) - Common issues and solutions

@@ -15,8 +15,8 @@
 - [Core MCTS Process](MCTS-Algorithm#core-mcts-process)
 - [Key Components](MCTS-Algorithm#key-components)
 - [PrismBench's Three-Phase MCTS](MCTS-Algorithm#prismbenchs-three-phase-mcts)
-- [Tree Structure](Tree-Structure)
-- [Node Structure](Tree-Structure#node-structure)
+- [Tree Structure](tree-structure)
+- [Node Structure](tree-structure#node-structure)
 
 **Agent System**  
 - [Agent Overview](Agent-System)
@@ -64,16 +64,16 @@
 ---
 
 ### **Examples & Tutorials**
-- [Basic Examples](Basic-Examples) *(Coming Soon)*
-- [Advanced Examples](Advanced-Examples) *(Coming Soon)*
-- [Step-by-Step Tutorials](Tutorials) *(Coming Soon)*
+- [Extending PrismBench](Extending-PrismBench)
+- [Extension Combinations](Extension-Combinations)
+- [Custom Environments](Custom-Environments)
 
 ---
 
 ### **Support**
-- [Troubleshooting](Troubleshooting)
-- [FAQ](Troubleshooting#frequently-asked-questions)
-- [Common Issues](Troubleshooting#common-issues)
+- [Troubleshooting](troubleshooting)
+- [Quick Diagnostics](troubleshooting#quick-diagnostics)
+- [Common Issues](troubleshooting#common-issues-by-category)
 
 ---
 
@@ -86,6 +86,6 @@
 
 <div align="center">
 
-**[Back to Top](Home.md)**
+**[Back to Top](Home)**
 
 </div> 
