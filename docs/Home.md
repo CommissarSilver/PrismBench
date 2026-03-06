@@ -124,4 +124,4 @@ We welcome contributions to PrismBench! Whether you're fixing bugs, adding featu
 
 ---
 
-*Made with enough  to fell an elephant and a whole lot of  by `Ahura Majdinasab - SWAT Lab - Polytechnique Montreal`* 
+*Made with enough ☕️ to fell an elephant and a whole lot of ❤️ by `Ahura Majdinasab - SWAT Lab - Polytechnique Montreal`* 
