@@ -426,27 +426,27 @@ Recommended checks:
 ---
 
 **Next Steps:**
-- [🤖 Agent Configurations](config-agents.md) - Detailed agent configuration guide
-- [🌍 Environment Configurations](config-environments.md) - Environment setup details
-- [🔍 Phase Configurations](config-phases.md) - MCTS parameter tuning
-- [🌳 Tree Configurations](config-tree.md) - Search space configuration
+- [Agent Configurations](config-agents.md) - Detailed agent configuration guide
+- [Environment Configurations](config-environments.md) - Environment setup details
+- [Phase Configurations](config-phases.md) - MCTS parameter tuning
+- [Tree Configurations](config-tree.md) - Search space configuration
 
 ---
 
 ## Related Pages
 
-### ⚙️ **Configuration Guides**
-- [🤖 Agent System](Agent-System) - Understanding agent configuration
-- [🌍 Environment System](Environment-System) - Environment configuration details
-- [🧩 Custom Agents](Custom-Agents) - Creating custom agent configurations
-- [🌐 Custom Environments](Custom-Environments) - Building custom environment configs
+### **Configuration Guides**
+- [Agent System](Agent-System) - Understanding agent configuration
+- [Environment System](Environment-System) - Environment configuration details
+- [Custom Agents](Custom-Agents) - Creating custom agent configurations
+- [Custom Environments](Custom-Environments) - Building custom environment configs
 
-### 🚀 **Getting Started**
-- [⚡ Quick Start](Quick-Start) - Basic configuration setup
-- [🏗️ Architecture Overview](Architecture-Overview) - System design and components
-- [🆘 Troubleshooting](Troubleshooting) - Configuration-related issues
+### **Getting Started**
+- [Quick Start](Quick-Start) - Basic configuration setup
+- [Architecture Overview](Architecture-Overview) - System design and components
+- [Troubleshooting](Troubleshooting) - Configuration-related issues
 
-### 🛠️ **Advanced Configuration**
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Phase configuration parameters
-- [🔗 Extension Combinations](Extension-Combinations) - Configuring complex setups
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension configuration 
+### **Advanced Configuration**
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Phase configuration parameters
+- [Extension Combinations](Extension-Combinations) - Configuring complex setups
+- [Extending PrismBench](Extending-PrismBench) - Framework extension configuration 

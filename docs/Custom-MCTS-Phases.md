@@ -38,17 +38,17 @@ Each phase **must** implement five core methods:
 
 | Method | Purpose | Async | Description |
 |--------|---------|-------|-------------|
-| `select_node` | Node Selection | ✅ | Choose which node to evaluate next |
-| `evaluate_node` | Node Evaluation | ✅ | Execute evaluation for selected node |
-| `calculate_node_value` | Scoring | ❌ | Convert evaluation results to numeric score |
-| `backpropagate_node_value` | Value Propagation | ❌ | Update ancestor nodes with new values |
-| `expand_node` | Tree Expansion | ✅ | Generate child nodes for expansion |
+| `select_node` | Node Selection | Yes | Choose which node to evaluate next |
+| `evaluate_node` | Node Evaluation | Yes | Execute evaluation for selected node |
+| `calculate_node_value` | Scoring | No | Convert evaluation results to numeric score |
+| `backpropagate_node_value` | Value Propagation | No | Update ancestor nodes with new values |
+| `expand_node` | Tree Expansion | Yes | Generate child nodes for expansion |
 
 ### **Optional Strategy Methods**
 
 | Method | Purpose | Async | Description |
 |--------|---------|-------|-------------|
-| `initialize_phase` | Phase Setup | ✅ | Custom initialization logic |
+| `initialize_phase` | Phase Setup | Yes | Custom initialization logic |
 
 ---
 
@@ -751,17 +751,17 @@ async def test_individual_strategies():
 
 ## Related Pages
 
-### 🔧 **Extension Development**
-- [🧩 Custom Agents](Custom-Agents) - Create specialized agents for your phases
-- [🌐 Custom Environments](Custom-Environments) - Build environments for phase evaluation
-- [🔗 Extension Combinations](Extension-Combinations) - Combine phases with other extensions
+### **Extension Development**
+- [Custom Agents](Custom-Agents) - Create specialized agents for your phases
+- [Custom Environments](Custom-Environments) - Build environments for phase evaluation
+- [Extension Combinations](Extension-Combinations) - Combine phases with other extensions
 
-### 🧠 **MCTS System**
-- [🧠 MCTS Algorithm](MCTS-Algorithm) - Understanding the core algorithm
-- [🌳 Tree Structure](Tree-Structure) - Search tree implementation
-- [📊 Results Analysis](Results-Analysis) - Analyzing phase results
+### **MCTS System**
+- [MCTS Algorithm](MCTS-Algorithm) - Understanding the core algorithm
+- [Tree Structure](Tree-Structure) - Search tree implementation
+- [Results Analysis](Results-Analysis) - Analyzing phase results
 
-### 🛠️ **Implementation**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension overview
-- [📋 Configuration Overview](Configuration-Overview) - Phase configuration parameters
-- [🆘 Troubleshooting](Troubleshooting) - Phase-related issues and solutions
+### **Implementation**
+- [Extending PrismBench](Extending-PrismBench) - Framework extension overview
+- [Configuration Overview](Configuration-Overview) - Phase configuration parameters
+- [Troubleshooting](Troubleshooting) - Phase-related issues and solutions

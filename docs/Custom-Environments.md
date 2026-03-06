@@ -550,17 +550,17 @@ async def test_environment_service():
 
 ## Related Pages
 
-### 🔧 **Extension Development**
-- [🧩 Custom Agents](Custom-Agents) - Create specialized agents for your environments
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Use environments in search strategies
-- [🔗 Extension Combinations](Extension-Combinations) - Combine environments with other extensions
+### **Extension Development**
+- [Custom Agents](Custom-Agents) - Create specialized agents for your environments
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Use environments in search strategies
+- [Extension Combinations](Extension-Combinations) - Combine environments with other extensions
 
-### 🌍 **Environment System**
-- [🌍 Environment System](Environment-System) - Understanding the environment framework
-- [🤖 Agent System](Agent-System) - Agent integration and orchestration
-- [📋 Configuration Overview](Configuration-Overview) - Environment configuration
+### **Environment System**
+- [Environment System](Environment-System) - Understanding the environment framework
+- [Agent System](Agent-System) - Agent integration and orchestration
+- [Configuration Overview](Configuration-Overview) - Environment configuration
 
-### 🛠️ **Implementation**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension overview
-- [🏗️ Architecture Overview](Architecture-Overview) - System design and components
-- [🆘 Troubleshooting](Troubleshooting) - Environment-related issues and solutions
+### **Implementation**
+- [Extending PrismBench](Extending-PrismBench) - Framework extension overview
+- [Architecture Overview](Architecture-Overview) - System design and components
+- [Troubleshooting](Troubleshooting) - Environment-related issues and solutions

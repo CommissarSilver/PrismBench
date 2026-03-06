@@ -580,19 +580,19 @@ async def _execute_competitive_workflow(self, challenge: str) -> Dict:
 
 ## Related Pages
 
-### 🔧 **Individual Extensions**
-- [🧩 Custom Agents](Custom-Agents) - Creating specialized agents
-- [🌐 Custom Environments](Custom-Environments) - Building evaluation environments
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Implementing search strategies
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension overview
+### **Individual Extensions**
+- [Custom Agents](Custom-Agents) - Creating specialized agents
+- [Custom Environments](Custom-Environments) - Building evaluation environments
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Implementing search strategies
+- [Extending PrismBench](Extending-PrismBench) - Framework extension overview
 
-### 🏗️ **System Architecture**
-- [🏗️ Architecture Overview](Architecture-Overview) - Framework design and components
-- [🤖 Agent System](Agent-System) - Multi-agent architecture
-- [🌍 Environment System](Environment-System) - Evaluation environments
-- [🧠 MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search
+### **System Architecture**
+- [Architecture Overview](Architecture-Overview) - Framework design and components
+- [Agent System](Agent-System) - Multi-agent architecture
+- [Environment System](Environment-System) - Evaluation environments
+- [MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search
 
-### 🛠️ **Implementation**
-- [📋 Configuration Overview](Configuration-Overview) - Configuration management
-- [📊 Results Analysis](Results-Analysis) - Understanding evaluation results
-- [🆘 Troubleshooting](Troubleshooting) - Common issues and solutions
+### **Implementation**
+- [Configuration Overview](Configuration-Overview) - Configuration management
+- [Results Analysis](Results-Analysis) - Understanding evaluation results
+- [Troubleshooting](Troubleshooting) - Common issues and solutions

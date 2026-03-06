@@ -245,17 +245,17 @@ For implementation details, see the [Search Service README](../src/services/sear
 
 ## Related Pages
 
-### 🌳 **Tree & Search**
-- [🌳 Tree Structure](Tree-Structure) - Search tree implementation details
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Implementing custom search strategies
-- [📊 Results Analysis](Results-Analysis) - Analyzing MCTS results
+### **Tree & Search**
+- [Tree Structure](Tree-Structure) - Search tree implementation details
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Implementing custom search strategies
+- [Results Analysis](Results-Analysis) - Analyzing MCTS results
 
-### 🏗️ **System Integration**
-- [🏗️ Architecture Overview](Architecture-Overview) - How MCTS fits in the system
-- [🌍 Environment System](Environment-System) - Evaluation environments
-- [🤖 Agent System](Agent-System) - Agent integration
+### **System Integration**
+- [Architecture Overview](Architecture-Overview) - How MCTS fits in the system
+- [Environment System](Environment-System) - Evaluation environments
+- [Agent System](Agent-System) - Agent integration
 
-### 🛠️ **Advanced Usage**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extensions
-- [🔗 Extension Combinations](Extension-Combinations) - Combining MCTS with custom components
-- [📋 Configuration Overview](Configuration-Overview) - MCTS configuration parameters 
+### **Advanced Usage**
+- [Extending PrismBench](Extending-PrismBench) - Framework extensions
+- [Extension Combinations](Extension-Combinations) - Combining MCTS with custom components
+- [Configuration Overview](Configuration-Overview) - MCTS configuration parameters 

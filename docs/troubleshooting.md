@@ -1,4 +1,4 @@
-# 🔧 Troubleshooting
+# Troubleshooting
 
 *This page contains the content from the original troubleshooting.md file - you'll need to copy the content from that file here for GitHub Wiki compatibility.*
 
@@ -6,7 +6,7 @@ For now, this is a placeholder. Please copy the content from `docs/troubleshooti
 
 ---
 
-**[⬅️ Back to Tree Structure](Tree-Structure)** | **[Back to Home 🏠](Home)**
+**[Back to Tree Structure](Tree-Structure)** | **[Back to Home](Home)**
 
 # Troubleshooting Guide
 
@@ -49,7 +49,7 @@ tail -f logs/search_service.log
 
 ## Common Issues by Category
 
-## 🔧 Installation & Setup Issues
+## Installation & Setup Issues
 
 ### Issue: Service Won't Start
 
@@ -112,7 +112,7 @@ ls configs/agents/
 cp configs/agents/agent_template.yml configs/agents/my_agent.yml
 ```
 
-## 🔑 API Keys & Authentication
+## API Keys & Authentication
 
 ### Issue: Missing API Keys
 
@@ -176,7 +176,7 @@ phase_params:
   num_nodes_per_iteration: 2  # Reduce from 5
 ```
 
-## 🌐 Service Communication Issues
+## Service Communication Issues
 
 ### Issue: Service Connection Refused
 
@@ -243,7 +243,7 @@ redis-cli FLUSHALL
 docker-compose restart redis
 ```
 
-## 🤖 Agent Issues
+## Agent Issues
 
 ### Issue: Agent Configuration Error
 
@@ -307,7 +307,7 @@ configs:
   model_name: claude-3-5-sonnet-20240620  # Available
 ```
 
-## 🌍 Environment Issues
+## Environment Issues
 
 ### Issue: Environment Not Found
 
@@ -382,7 +382,7 @@ chmod 755 /tmp
 export TMPDIR=/custom/temp/path
 ```
 
-## 🔍 Search & MCTS Issues
+## Search & MCTS Issues
 
 ### Issue: Tree Construction Failures
 
@@ -450,7 +450,7 @@ phase_params:
   max_iterations: 50   # Reduce iterations
 ```
 
-## 📊 Analysis & Results Issues
+## Analysis & Results Issues
 
 ### Issue: Results File Corruption
 
@@ -501,7 +501,7 @@ with open('results.json') as f:
 python -m src.analysis.generate_sample_data
 ```
 
-## 🐳 Docker Issues
+## Docker Issues
 
 ### Issue: Container Build Failures
 
@@ -567,7 +567,7 @@ volumes:
   - ./data:/app/data:rw        # Read-write mount
 ```
 
-## 🔍 Debugging Strategies
+## Debugging Strategies
 
 ### Enable Debug Logging
 
@@ -625,7 +625,7 @@ def validate_config():
     return errors
 ```
 
-## 🆘 Getting Help
+## Getting Help
 
 ### Collecting Debug Information
 
@@ -693,43 +693,43 @@ tail -50 logs/service.log
 
 Before seeking help, verify:
 
-- [ ] All services are running and healthy
-- [ ] API keys are correctly configured
-- [ ] Configuration files are valid YAML
-- [ ] Required Python packages are installed
-- [ ] Port conflicts are resolved
-- [ ] Sufficient disk space available
-- [ ] Network connectivity between services
-- [ ] Log files checked for specific errors
+- [] All services are running and healthy
+- [] API keys are correctly configured
+- [] Configuration files are valid YAML
+- [] Required Python packages are installed
+- [] Port conflicts are resolved
+- [] Sufficient disk space available
+- [] Network connectivity between services
+- [] Log files checked for specific errors
 
 ---
 
 **Related Documentation:**
-- [🚀 Quick Start](quickstart.md) - Basic setup guide
-- [⚙️ Configuration Overview](config-overview.md) - Detailed configuration
-- [🏗️ Architecture](architecture.md) - System architecture
-- [🛡️ Best Practices](best-practices.md) - Recommended approaches
+- [Quick Start](quickstart.md) - Basic setup guide
+- [Configuration Overview](config-overview.md) - Detailed configuration
+- [Architecture](architecture.md) - System architecture
+- [Best Practices](best-practices.md) - Recommended approaches
 
 ---
 
 ## Related Pages
 
-### 🚀 **Setup & Configuration**
-- [⚡ Quick Start](Quick-Start) - Basic setup and installation guide
-- [📋 Configuration Overview](Configuration-Overview) - Detailed configuration system
-- [🏗️ Architecture Overview](Architecture-Overview) - System architecture and components
+### **Setup & Configuration**
+- [Quick Start](Quick-Start) - Basic setup and installation guide
+- [Configuration Overview](Configuration-Overview) - Detailed configuration system
+- [Architecture Overview](Architecture-Overview) - System architecture and components
 
-### 🔧 **Extension Development**
-- [🧩 Custom Agents](Custom-Agents) - Agent-related troubleshooting
-- [🌐 Custom Environments](Custom-Environments) - Environment issues and solutions
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Phase implementation problems
+### **Extension Development**
+- [Custom Agents](Custom-Agents) - Agent-related troubleshooting
+- [Custom Environments](Custom-Environments) - Environment issues and solutions
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Phase implementation problems
 
-### 🧠 **Core Systems**
-- [🤖 Agent System](Agent-System) - Agent architecture and integration
-- [🌍 Environment System](Environment-System) - Environment framework issues
-- [🧠 MCTS Algorithm](MCTS-Algorithm) - Algorithm-specific problems
-- [📊 Results Analysis](Results-Analysis) - Analysis and visualization issues
+### **Core Systems**
+- [Agent System](Agent-System) - Agent architecture and integration
+- [Environment System](Environment-System) - Environment framework issues
+- [MCTS Algorithm](MCTS-Algorithm) - Algorithm-specific problems
+- [Results Analysis](Results-Analysis) - Analysis and visualization issues
 
-### 🛠️ **Advanced Topics**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extension issues
-- [🔗 Extension Combinations](Extension-Combinations) - Complex setup troubleshooting 
+### **Advanced Topics**
+- [Extending PrismBench](Extending-PrismBench) - Framework extension issues
+- [Extension Combinations](Extension-Combinations) - Complex setup troubleshooting 

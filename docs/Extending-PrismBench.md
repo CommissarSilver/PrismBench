@@ -6,7 +6,7 @@ PrismBench is designed with extensibility at its core. The framework provides th
 
 ## Extension Overview
 
-### 🤖 **Agent Extensions**
+### **Agent Extensions**
 Create custom LLM agents with specialized prompts, behaviors, and interaction patterns.
 
 **Use Cases:**
@@ -19,7 +19,7 @@ Create custom LLM agents with specialized prompts, behaviors, and interaction pa
 
 ---
 
-### 🌍 **Environment Extensions**  
+### **Environment Extensions**  
 Build custom evaluation environments with specialized workflows and agent orchestration.
 
 **Use Cases:**
@@ -32,7 +32,7 @@ Build custom evaluation environments with specialized workflows and agent orches
 
 ---
 
-### 🔍 **Phase Extensions**
+### **Phase Extensions**
 Implement custom MCTS phases with specialized search strategies and evaluation objectives.
 
 **Use Cases:**
@@ -156,27 +156,27 @@ The true power of PrismBench comes from **combining extensions**:
 - [API Reference](LLM-Interface-API) - Service APIs
 
 ### **Community**
-- [📖 Contributing Guide](https://github.com/PrismBench/PrismBench/blob/main/CONTRIBUTING.md)
-- [💬 Discussions](https://github.com/PrismBench/PrismBench/discussions)
-- [🐛 Report Issues](https://github.com/PrismBench/PrismBench/issues)
+- [Contributing Guide](https://github.com/PrismBench/PrismBench/blob/main/CONTRIBUTING.md)
+- [Discussions](https://github.com/PrismBench/PrismBench/discussions)
+- [Report Issues](https://github.com/PrismBench/PrismBench/issues)
 
 ---
 
 ## Related Pages
 
-### 🔧 **Extension Guides**
-- [🧩 Custom Agents](Custom-Agents) - Creating specialized agents with custom prompts
-- [🌐 Custom Environments](Custom-Environments) - Building custom evaluation environments  
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Implementing custom search strategies
-- [🔗 Extension Combinations](Extension-Combinations) - Advanced extension strategies
+### **Extension Guides**
+- [Custom Agents](Custom-Agents) - Creating specialized agents with custom prompts
+- [Custom Environments](Custom-Environments) - Building custom evaluation environments  
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Implementing custom search strategies
+- [Extension Combinations](Extension-Combinations) - Advanced extension strategies
 
-### 🏗️ **System Understanding**
-- [🏗️ Architecture Overview](Architecture-Overview) - Framework design and components
-- [🤖 Agent System](Agent-System) - Multi-agent architecture
-- [🌍 Environment System](Environment-System) - Evaluation environments
-- [🧠 MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search
+### **System Understanding**
+- [Architecture Overview](Architecture-Overview) - Framework design and components
+- [Agent System](Agent-System) - Multi-agent architecture
+- [Environment System](Environment-System) - Evaluation environments
+- [MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search
 
-### 🚀 **Getting Started**
-- [⚡ Quick Start](Quick-Start) - Basic setup and first run
-- [📋 Configuration Overview](Configuration-Overview) - Configuration system
-- [🆘 Troubleshooting](Troubleshooting) - Common issues and solutions
+### **Getting Started**
+- [Quick Start](Quick-Start) - Basic setup and first run
+- [Configuration Overview](Configuration-Overview) - Configuration system
+- [Troubleshooting](Troubleshooting) - Common issues and solutions

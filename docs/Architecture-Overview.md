@@ -12,14 +12,14 @@ PrismBench follows a **microservices architecture** pattern, designed for scalab
 graph TB
     subgraph "PrismBench Framework"
         subgraph "Core Services"
-            Search[Search Service<br/>🔍 MCTS Engine<br/>Port 8002]
-            Environment[Environment Service<br/>🌍 Challenge Execution<br/>Port 8001]
-            LLM[LLM Interface Service<br/>🤖 Model Communication<br/>Port 8000]
+            Search[Search Service<br/> MCTS Engine<br/>Port 8002]
+            Environment[Environment Service<br/> Challenge Execution<br/>Port 8001]
+            LLM[LLM Interface Service<br/> Model Communication<br/>Port 8000]
         end
         
         subgraph "Data Layer"
-            Redis[Redis<br/>🗄️ Session Storage]
-            FileSystem[File System<br/>📁 Results & Logs]
+            Redis[Redis<br/> Session Storage]
+            FileSystem[File System<br/> Results & Logs]
         end
         
         Search <--> Environment
@@ -156,10 +156,10 @@ The agent system provides specialized AI assistants for different tasks:
 ```mermaid
 graph LR
     subgraph "Agent Workflow"
-        CD[Challenge Designer<br/>📝 Problem Creation]
-        TG[Test Generator<br/>🧪 Test Cases]
-        PS[Problem Solver<br/>💡 Solutions]
-        PF[Problem Fixer<br/>🔧 Debugging]
+        CD[Challenge Designer<br/> Problem Creation]
+        TG[Test Generator<br/> Test Cases]
+        PS[Problem Solver<br/> Solutions]
+        PF[Problem Fixer<br/> Debugging]
         
         CD --> TG
         TG --> PS
@@ -167,9 +167,9 @@ graph LR
     end
     
     subgraph "Enhanced Workflow"
-        CDA[Challenge Designer Advanced<br/>📝 Diverse Problems]
-        TV[Test Validator<br/>✅ Quality Assurance]
-        TEA[Test Error Analyzer<br/>🔍 Failure Analysis]
+        CDA[Challenge Designer Advanced<br/> Diverse Problems]
+        TV[Test Validator<br/> Quality Assurance]
+        TEA[Test Error Analyzer<br/> Failure Analysis]
         
         CDA --> TV
         PS --> TEA
@@ -280,19 +280,19 @@ sequenceDiagram
 
 ## Related Pages
 
-### 🧠 **Core Components**
-- [🤖 Agent System](Agent-System) - Deep dive into the agent architecture
-- [🌍 Environment System](Environment-System) - Environment framework details
-- [🌳 Tree Structure](Tree-Structure) - Search tree implementation
-- [🌳 MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search details
+### **Core Components**
+- [Agent System](Agent-System) - Deep dive into the agent architecture
+- [Environment System](Environment-System) - Environment framework details
+- [Tree Structure](Tree-Structure) - Search tree implementation
+- [MCTS Algorithm](MCTS-Algorithm) - Monte Carlo Tree Search details
 
-### ⚙️ **Configuration & Setup**
-- [📋 Configuration Overview](Configuration-Overview) - Configuration system details
-- [⚡ Quick Start](Quick-Start) - Getting started guide
-- [🆘 Troubleshooting](Troubleshooting) - Common issues and solutions
+### **Configuration & Setup**
+- [Configuration Overview](Configuration-Overview) - Configuration system details
+- [Quick Start](Quick-Start) - Getting started guide
+- [Troubleshooting](Troubleshooting) - Common issues and solutions
 
-### 🛠️ **Extensions**
-- [🔧 Extending PrismBench](Extending-PrismBench) - Framework extensibility
-- [🧩 Custom Agents](Custom-Agents) - Creating custom agents
-- [🌐 Custom Environments](Custom-Environments) - Building custom environments
-- [🔍 Custom MCTS Phases](Custom-MCTS-Phases) - Implementing search strategies 
+### **Extensions**
+- [Extending PrismBench](Extending-PrismBench) - Framework extensibility
+- [Custom Agents](Custom-Agents) - Creating custom agents
+- [Custom Environments](Custom-Environments) - Building custom environments
+- [Custom MCTS Phases](Custom-MCTS-Phases) - Implementing search strategies 
