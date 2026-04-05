@@ -113,10 +113,11 @@ If you use PrismBench in your research, please cite:
 ```bibtex
 @article{
 majdinasab2026prismbench,
-title={PrismBench: Dynamic and Flexible Benchmarking of LLMs' Code Generation with Monte Carlo Tree Search},
-author={Vahid Majdinasab, Amin Nikanjam, Foutse Khomh},
+title={PrismBench: Dynamic and Flexible Benchmarking of {LLM}s Code Generation with Monte Carlo Tree Search},
+author={Vahid Majdinasab and Amin Nikanjam and Foutse Khomh},
 journal={Transactions on Machine Learning Research},
+issn={2835-8856},
 year={2026},
-url={https://openreview.net/forum?id=O0bsC6FDly},
+url={https://openreview.net/forum?id=O0bsC6FDly}
 }
 ```
